@@ -1,4 +1,4 @@
-name: Test this project
+name: test-check
 on: [push]
 jobs:
   Explore-GitHub-Actions:
