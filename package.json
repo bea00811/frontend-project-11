@@ -1,0 +1,14 @@
+{
+  "name": "@hexlet/code",
+  "version": "1.0.0",
+  "description": "Project RSS generator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Irina Kozlova",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.41.0"
+  }
+}
