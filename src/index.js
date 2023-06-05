@@ -8,10 +8,9 @@ import * as yup from "yup";
 import onChange from "on-change";
 
 const mystate = {
-  valuefrominput: "hello",
+  valuefrominput: " ",
   smthtype: "smth",
   urlList: [],
-  urlList2: [],
 };
 
 const watchedState = onChange(
@@ -34,11 +33,15 @@ form.addEventListener("submit", function (e) {
 
   const putUrlsToList = () => {
     watchedState.urlList.push(watchedState.valuefrominput);
+  };
+
+  const showValue = () => {
     console.log(watchedState.urlList);
+    console.log("hello!!");
   };
 
   const schema = yup.object({
-    name: yup.string().required().min(3, "нужно не менее 3 символов"),
+    name: yup.string().url().nullable(),
   });
 
   const validDataFromInput = schema.validate(
@@ -50,6 +53,7 @@ form.addEventListener("submit", function (e) {
     (result) => {
       document.getElementById("url-input").style.border = "none";
       putUrlsToList();
+      showValue();
     },
     (error) => {
       document.getElementById("url-input").style.border = "4px solid red";
