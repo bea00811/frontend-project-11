@@ -9,6 +9,13 @@ import onChange from "on-change";
 import i18next from "i18next";
 import axios from "axios";
 
+const delayFunc = () => {
+  setTimeout(() => {
+    console.log("this is the first message");
+  }, 5000);
+};
+delayFunc();
+
 i18next.init({
   lng: "ru", // if you're using a language detector, do not define the lng option
   debug: true,
@@ -26,6 +33,10 @@ const mystate = {
   valuefrominput: " ",
   arrayUrl: [],
   titles: [],
+  links: [],
+  descriptions: [],
+  feedsDescriptions: [],
+  feedsTitles: [],
 };
 
 const watchedState = onChange(mystate, (path, value, previousValue) => {
@@ -59,7 +70,10 @@ const form = document.getElementById("rss-form");
 
 // Hexlet All origins
 const parseData = (urlAddress) => {
-  let arr = [];
+  let titlesArr = [];
+  let linksArr = [];
+  let feedsTitlesArr = [];
+  let feedsDescriptionsArr = [];
   fetch(
     `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(
       urlAddress
@@ -70,26 +84,49 @@ const parseData = (urlAddress) => {
       throw new Error("Network response was not ok.");
     })
     .then((data) => {
-      console.log(typeof data.contents);
       const parser = new DOMParser();
       const doc1 = parser.parseFromString(data.contents, "application/xml");
+      console.log(doc1);
       const titlesNode = doc1.querySelectorAll("item title");
+      const linksNode = doc1.querySelectorAll("item link");
+      const FeedtitlesNode = doc1.querySelectorAll("channel title");
+      const FeeddescriptionsNode = doc1.querySelectorAll("channel description");
       const titles = Array.from(titlesNode);
+      const links = Array.from(linksNode);
+      const Feedtitles = Array.from(FeedtitlesNode);
+      const FeedDescriptions = Array.from(FeeddescriptionsNode);
 
       for (let i = 0; i < titles.length; i++) {
-        arr.push(titles[i].innerHTML);
+        titlesArr.push(titles[i].innerHTML);
+        linksArr.push(links[i].innerHTML);
+        feedsTitlesArr.push(Feedtitles[i].innerHTML);
       }
-      console.log(typeof arr);
-      watchedState.titles = arr;
-      console.log(mystate.titles);
-      console.log(mystate.titles.length);
-      console.log("length");
+
+      for (let i = 0; i < FeedDescriptions.length; i++) {
+        feedsDescriptionsArr.push(FeedDescriptions[i].innerHTML);
+      }
+
+      watchedState.titles = titlesArr;
+      watchedState.links = linksArr;
+      watchedState.feedsDescriptions = feedsDescriptionsArr;
+      watchedState.feedsTitles = feedsTitlesArr;
+
+      let myTitle = document.createElement("div");
+      myTitle.innerHTML = watchedState.feedsTitles[0];
+      myTitle.className = "title";
+      document.body.append(myTitle);
+
+      let myDescription = document.createElement("div");
+      myDescription.innerHTML = watchedState.feedsDescriptions[0];
+      myDescription.className = "description";
+      document.body.append(myDescription);
 
       for (let l = 0; l < mystate.titles.length; l++) {
-        let myDiv = document.createElement("div");
-        myDiv.className = "title";
-        myDiv.innerHTML = mystate.titles[l];
-        document.body.append(myDiv);
+        let myLink = document.createElement("a");
+        myLink.innerHTML = mystate.titles[l];
+        myLink.setAttribute("href", mystate.links[l]);
+        myLink.className = "link";
+        document.body.append(myLink);
       }
     });
 };
@@ -110,28 +147,12 @@ form.addEventListener("submit", function (e) {
   validDataFromInput.then(
     (result) => {
       pushUrl();
-
-      // let promise = new Promise(function (resolve, reject) {
-      //   // задача, не требующая времени
-      //   if (!isDoublesinArr(mystate.arrayUrl)) {
-      //     resolve("I have no doubles!!!");
-      //     return;
-      //   }
-      //   reject("I have doubles :(((");
-      //   return;
-      // });
-
-      // promise
-      //   .then((result) => console.log(result))
-      //   .catch((error) => console.log(error));
-
       if (isDoublesinArr(watchedState.arrayUrl)) {
         document.getElementById("url-input").style.border = "4px solid red";
         document.getElementById("output").innerHTML =
           i18next.t("RSS уже существует");
         formElement.value = "";
         console.log(`you have doubles in inputs ${result}`);
-
         return;
       } else {
         parseData(watchedState.valuefrominput);
@@ -149,30 +170,7 @@ form.addEventListener("submit", function (e) {
       document.getElementById("url-input").style.border = "4px solid red";
       document.getElementById("output").innerHTML = i18next.t("invalidUrl");
       formElement.value = "";
-
       console.log("oops!" + error);
     }
   );
 });
-
-// Simple axios
-// axios
-//   .get("https://ru.hexlet.io/lessons.rss")
-//   .then(function (response) {
-//     // handle success
-//     console.log(response);
-//   })
-//   .catch(function (error) {
-//     // handle error
-//     console.log(error);
-//   });
-
-// Domparser
-
-// const parser = new DOMParser();
-
-// const xmlString = "https://ru.hexlet.io/lessons.rss";
-// const doc1 = parser.parseFromString(xmlString, "text/html");
-// console.log(doc1.documentElement);
-
-init();
