@@ -9,13 +9,6 @@ import onChange from "on-change";
 import i18next from "i18next";
 import axios from "axios";
 
-const delayFunc = () => {
-  setTimeout(() => {
-    console.log("this is the first message");
-  }, 5000);
-};
-delayFunc();
-
 i18next.init({
   lng: "ru", // if you're using a language detector, do not define the lng option
   debug: true,
@@ -38,6 +31,10 @@ const mystate = {
   feedsDescriptions: [],
   feedsTitles: [],
 };
+
+const schema = yup.object({
+  name: yup.string().url().nullable(),
+});
 
 const watchedState = onChange(mystate, (path, value, previousValue) => {
   console.log("this:", this);
@@ -86,7 +83,14 @@ const parseData = (urlAddress) => {
     .then((data) => {
       const parser = new DOMParser();
       const doc1 = parser.parseFromString(data.contents, "application/xml");
+      if (doc1.documentElement.nodeName === "parsererror") {
+        throw new Error("OOps!!:)) Network response was parcerror.");
+      }
       console.log(doc1);
+      console.log(doc1.documentElement.nodeName);
+      console.log(doc1.documentElement.nodeName === "parsererror");
+
+      console.log(typeof doc1.documentElement);
       const titlesNode = doc1.querySelectorAll("item title");
       const linksNode = doc1.querySelectorAll("item link");
       const FeedtitlesNode = doc1.querySelectorAll("channel title");
@@ -128,17 +132,17 @@ const parseData = (urlAddress) => {
         myLink.className = "link";
         document.body.append(myLink);
       }
+
+      setTimeout(() => {
+        parseData(urlAddress);
+        console.log("this is the second message");
+      }, 3000);
     });
 };
 
 form.addEventListener("submit", function (e) {
   e.preventDefault();
   watchedState.valuefrominput = formElement.value;
-
-  const schema = yup.object({
-    name: yup.string().url().nullable(),
-  });
-
   const validDataFromInput = schema.validate(
     { name: watchedState.valuefrominput },
     { strict: true }
@@ -147,6 +151,8 @@ form.addEventListener("submit", function (e) {
   validDataFromInput.then(
     (result) => {
       pushUrl();
+      console.log(result);
+
       if (isDoublesinArr(watchedState.arrayUrl)) {
         document.getElementById("url-input").style.border = "4px solid red";
         document.getElementById("output").innerHTML =
