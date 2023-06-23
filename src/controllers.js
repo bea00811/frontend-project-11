@@ -2,11 +2,14 @@ import * as _ from 'lodash';
 
 export const isDoublesinArr = (arrayOfUrl) => {
   const countItems = {};
-
-  for (const item of arrayOfUrl) {
-    // если элемент уже был, то прибавляем 1, если нет - устанавливаем 1
-    countItems[item] = countItems[item] ? countItems[item] + 1 : 1;
-  }
+  // если элемент уже был, то прибавляем 1, если нет - устанавливаем 1
+  arrayOfUrl.forEach((item) => {
+    if (countItems[item]) {
+      countItems[item] += 1;
+    } else {
+      countItems[item] = 1;
+    }
+  });
 
   const isDouble = Object.keys(countItems)
     .map((item) => countItems[item] > 1)
@@ -75,8 +78,4 @@ export const getUpdatedPost = (data) => {
     return result;
   }
   throw new Error('OOps!!:)) Network response was parcerror. From getUpdatedPosts this msg.');
-};
-
-export const pushUrl = (state, value) => {
-  state.push(value);
 };
