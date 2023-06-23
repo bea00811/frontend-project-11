@@ -1,11 +1,24 @@
 // @ts-check
 
 import init from "./init.js";
+import {
+  renderFeedFyrstly,
+  renderPostsFirstly,
+  renderPosts,
+  renderFeed,
+} from "./view.js";
+import {
+  pushUrl,
+  getPosts,
+  getUpdatedPost,
+  isDoublesinArr,
+} from "./controllers.js";
+import * as _ from "lodash";
+import onChange from "on-change";
 import "./style.css";
 import "./styles.scss";
 import "bootstrap";
 import * as yup from "yup";
-import onChange from "on-change";
 import i18next from "i18next";
 import axios from "axios";
 
@@ -16,7 +29,7 @@ i18next.init({
     ru: {
       translation: {
         doubleurl: "RSS уже существует",
-        invalidUrl: "Invalid Url",
+        invalidUrl: "Вы ввели неправильный URL",
       },
     },
   },
@@ -25,11 +38,53 @@ i18next.init({
 const mystate = {
   valuefrominput: " ",
   arrayUrl: [],
-  titles: [],
-  links: [],
-  descriptions: [],
-  feedsDescriptions: [],
-  feedsTitles: [],
+  feed: null,
+};
+const resultTitles = [];
+const resultDescriptions = [];
+const getData = (urlAddress) => {
+  axios
+    .get(
+      `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(
+        urlAddress
+      )}`
+    )
+    .then((data) => {
+      if (mystate.feed === null) {
+        const firstData = getPosts(data);
+        watchedState.feed = firstData;
+      }
+
+      const updatedData = getUpdatedPost(data);
+      const updatedPosts = updatedData.updatedPosts;
+      const previousPosts = mystate.feed.posts;
+
+      const updatedTitles = updatedData.title;
+      const previousTitles = mystate.feed.title;
+
+      const updatedDescriptions = updatedData.description;
+      const previousDescriptions = mystate.feed.description;
+
+      const PrevAndUpdatedPosts = [...updatedPosts, ...previousPosts];
+      const res = [...updatedPosts, ...previousPosts];
+      const resultPosts = _.uniqBy(PrevAndUpdatedPosts, "name");
+
+      resultTitles.push(updatedTitles);
+      console.log(_.uniq(resultTitles.flat()));
+      console.log("resultTitles");
+
+      resultDescriptions.push(updatedDescriptions);
+      console.log(_.uniq(resultDescriptions.flat()));
+      console.log("resultDescriptions");
+
+      watchedState.feed.posts = resultPosts;
+      watchedState.feed.title = _.uniq(resultTitles.flat());
+      watchedState.feed.description = _.uniq(resultDescriptions.flat());
+      console.log("previousData");
+    })
+    .catch((error) => {
+      console.log("error");
+    });
 };
 
 const schema = yup.object({
@@ -37,107 +92,41 @@ const schema = yup.object({
 });
 
 const watchedState = onChange(mystate, (path, value, previousValue) => {
-  console.log("this:", this);
-  console.log("path:", path);
-  console.log("value:", value);
-  console.log("previousValue:", previousValue);
-});
+  // console.log("path:", path);
+  // console.log("value:", value);
 
-const pushUrl = () => {
-  watchedState.arrayUrl.push(watchedState.valuefrominput);
-};
+  switch (path) {
+    case "feed":
+      renderFeedFyrstly(mystate.feed);
+      renderPostsFirstly(mystate.feed);
+      break;
+    case "feed.posts":
+      renderPosts(mystate.feed);
+    case "feed.titles":
+      renderFeed(mystate.feed);
 
-const isDoublesinArr = (arrayOfUrl) => {
-  const countItems = {};
+      break;
 
-  for (const item of arrayOfUrl) {
-    // если элемент уже был, то прибавляем 1, если нет - устанавливаем 1
-    countItems[item] = countItems[item] ? countItems[item] + 1 : 1;
+    default:
+      console.log("nothing changed");
   }
-
-  const isDouble = Object.keys(countItems)
-    .map((item) => countItems[item] > 1)
-    .includes(true);
-
-  return isDouble;
-};
+});
 
 const formElement = document.getElementById("url-input");
 const form = document.getElementById("rss-form");
 
 // Hexlet All origins
 const parseData = (urlAddress) => {
-  let titlesArr = [];
-  let linksArr = [];
-  let feedsTitlesArr = [];
-  let feedsDescriptionsArr = [];
-  fetch(
-    `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(
-      urlAddress
-    )}`
-  )
-    .then((response) => {
-      if (response.ok) return response.json();
-      throw new Error("Network response was not ok.");
-    })
-    .then((data) => {
-      const parser = new DOMParser();
-      const doc1 = parser.parseFromString(data.contents, "application/xml");
-      if (doc1.documentElement.nodeName === "parsererror") {
-        throw new Error("OOps!!:)) Network response was parcerror.");
-      }
-      console.log(doc1);
-      console.log(doc1.documentElement.nodeName);
-      console.log(doc1.documentElement.nodeName === "parsererror");
+  getData(urlAddress);
 
-      console.log(typeof doc1.documentElement);
-      const titlesNode = doc1.querySelectorAll("item title");
-      const linksNode = doc1.querySelectorAll("item link");
-      const FeedtitlesNode = doc1.querySelectorAll("channel title");
-      const FeeddescriptionsNode = doc1.querySelectorAll("channel description");
-      const titles = Array.from(titlesNode);
-      const links = Array.from(linksNode);
-      const Feedtitles = Array.from(FeedtitlesNode);
-      const FeedDescriptions = Array.from(FeeddescriptionsNode);
+  const checkRss = (urlAddress) => {
+    getData(urlAddress);
+    setTimeout(() => {
+      checkRss(urlAddress);
+    }, 12000);
+  };
 
-      for (let i = 0; i < titles.length; i++) {
-        titlesArr.push(titles[i].innerHTML);
-        linksArr.push(links[i].innerHTML);
-        feedsTitlesArr.push(Feedtitles[i].innerHTML);
-      }
-
-      for (let i = 0; i < FeedDescriptions.length; i++) {
-        feedsDescriptionsArr.push(FeedDescriptions[i].innerHTML);
-      }
-
-      watchedState.titles = titlesArr;
-      watchedState.links = linksArr;
-      watchedState.feedsDescriptions = feedsDescriptionsArr;
-      watchedState.feedsTitles = feedsTitlesArr;
-
-      let myTitle = document.createElement("div");
-      myTitle.innerHTML = watchedState.feedsTitles[0];
-      myTitle.className = "title";
-      document.body.append(myTitle);
-
-      let myDescription = document.createElement("div");
-      myDescription.innerHTML = watchedState.feedsDescriptions[0];
-      myDescription.className = "description";
-      document.body.append(myDescription);
-
-      for (let l = 0; l < mystate.titles.length; l++) {
-        let myLink = document.createElement("a");
-        myLink.innerHTML = mystate.titles[l];
-        myLink.setAttribute("href", mystate.links[l]);
-        myLink.className = "link";
-        document.body.append(myLink);
-      }
-
-      setTimeout(() => {
-        parseData(urlAddress);
-        console.log("this is the second message");
-      }, 3000);
-    });
+  checkRss(urlAddress);
 };
 
 form.addEventListener("submit", function (e) {
@@ -150,9 +139,7 @@ form.addEventListener("submit", function (e) {
 
   validDataFromInput.then(
     (result) => {
-      pushUrl();
-      console.log(result);
-
+      pushUrl(watchedState.arrayUrl, watchedState.valuefrominput);
       if (isDoublesinArr(watchedState.arrayUrl)) {
         document.getElementById("url-input").style.border = "4px solid red";
         document.getElementById("output").innerHTML =
@@ -161,7 +148,8 @@ form.addEventListener("submit", function (e) {
         console.log(`you have doubles in inputs ${result}`);
         return;
       } else {
-        parseData(watchedState.valuefrominput);
+        parseData(formElement.value);
+        console.log(mystate.feed);
         document.getElementById("url-input").style.border = "none";
         console.log("All right! Theres no mistakes and doubles in inputs!");
         document.getElementById("output").innerHTML = i18next.t(
@@ -174,7 +162,9 @@ form.addEventListener("submit", function (e) {
     },
     (error) => {
       document.getElementById("url-input").style.border = "4px solid red";
-      document.getElementById("output").innerHTML = i18next.t("invalidUrl");
+      document.getElementById("output").innerHTML = i18next.t(
+        "Вы ввели неправильный URL"
+      );
       formElement.value = "";
       console.log("oops!" + error);
     }

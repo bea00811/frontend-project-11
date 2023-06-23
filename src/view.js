@@ -1,38 +1,82 @@
-import i18next from "i18next";
-import { pushUrl, parseData } from "./controllers";
-import(pushUrl);
-i18next.init({
-  lng: "ru", // if you're using a language detector, do not define the lng option
-  debug: true,
-  resources: {
-    ru: {
-      translation: {
-        doubleurl: "RSS уже существует",
-        invalidUrl: "Invalid Url",
-      },
-    },
-  },
-});
+export const renderPostsFirstly = (state) => {
+  console.log(state);
+  console.log("this is state");
 
-//если не содержит дублей, то возвращается первое условие, если содержит, то второе
-const validUrLInterface = (funcReturnTrue) => {
-  if (funcReturnTrue) {
-    document.getElementById("url-input").style.border = "4px solid red";
-    document.getElementById("output").innerHTML =
-      i18next.t("RSS уже существует");
-    document.getElementById("url-input").value = "";
-    console.log(`you have doubles in inputs`);
-  } else {
-    parseData(watchedState.valuefrominput);
-    document.getElementById("url-input").style.border = "none";
-    console.log("All right! Theres no mistakes and doubles in inputs!");
-    document.getElementById("output").innerHTML = i18next.t(
-      "RSS успешно загружен"
-    );
+  const posts = document.querySelector(".posts");
 
-    formElement.value = "";
-    return;
+  let myContainer = document.createElement("ul");
+  myContainer.classList.add("posts-container");
+  posts.append(myContainer);
+
+  for (let i = 0; i < state.posts.length; i++) {
+    let myListEl = document.createElement("li");
+    let myLink = document.createElement("a");
+    myLink.innerHTML = state.posts[i].name;
+    myLink.setAttribute("href", state.posts[i].link);
+    myLink.setAttribute("target", "_blank");
+    myLink.className = "link";
+    myListEl.appendChild(myLink);
+    myContainer.append(myListEl);
+
+    if (state.posts[i].isReaded === false) {
+      myLink.classList.add("fw-bold");
+    } else {
+      myLink.classList.add("fw-normal");
+    }
+    myLink.setAttribute("data-id", state.posts[i].id);
   }
 };
 
-export default validUrLInterface;
+export const renderFeedFyrstly = (state) => {
+  const feed = document.querySelector(".feeds");
+  console.log(state);
+  console.log(state.title);
+
+  for (let i = state.title.length - 1; i >= 0; i--) {
+    let test = document.createElement("li");
+    let test2 = document.createElement("h4");
+    let test3 = document.createElement("p");
+    test2.innerHTML = state.title[i];
+    test3.innerHTML = state.description[i];
+    test.appendChild(test2);
+    test.appendChild(test3);
+    feed.appendChild(test);
+  }
+};
+
+export const renderPosts = (state) => {
+  let myContainer1 = document.querySelector(".posts-container");
+  myContainer1.innerHTML = "";
+  for (let i = 0; i < state.posts.length; i++) {
+    let myListEl = document.createElement("li");
+    let myLink = document.createElement("a");
+    myLink.innerHTML = state.posts[i].name;
+    myLink.setAttribute("href", state.posts[i].link);
+    myLink.setAttribute("target", "_blank");
+    myLink.className = "link";
+    myListEl.appendChild(myLink);
+    myContainer1.append(myListEl);
+    if (state.posts[i].isReaded === false) {
+      myLink.classList.add("fw-bold");
+    } else {
+      myLink.classList.add("fw-normal");
+    }
+    myLink.setAttribute("data-id", state.posts[i].id);
+  }
+  let newlist = document.querySelectorAll("li");
+};
+
+export const renderFeed = (state) => {
+  const feed = document.querySelector(".feeds");
+  feed.innerHTML = "";
+  for (let i = state.title.length - 1; i >= 0; i--) {
+    let test = document.createElement("li");
+    let test2 = document.createElement("h4");
+    let test3 = document.createElement("p");
+    test2.innerHTML = state.title[i];
+    test3.innerHTML = state.description[i];
+    test.appendChild(test2);
+    test.appendChild(test3);
+    feed.appendChild(test);
+  }
+};

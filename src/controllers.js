@@ -1,92 +1,82 @@
-import onChange from "on-change";
+import * as _ from 'lodash';
 
-const mystate = {
-  valuefrominput: " ",
-  arrayUrl: [],
-  titles: [],
-  links: [],
-  descriptions: [],
-  feedsDescriptions: [],
-  feedsTitles: [],
+export const isDoublesinArr = (arrayOfUrl) => {
+  const countItems = {};
+
+  for (const item of arrayOfUrl) {
+    // если элемент уже был, то прибавляем 1, если нет - устанавливаем 1
+    countItems[item] = countItems[item] ? countItems[item] + 1 : 1;
+  }
+
+  const isDouble = Object.keys(countItems)
+    .map((item) => countItems[item] > 1)
+    .includes(true);
+
+  return isDouble;
 };
 
-const watchedState = onChange(mystate, (path, value, previousValue) => {
-  console.log("this:", this);
-  console.log("path:", path);
-  console.log("value:", value);
-  console.log("previousValue:", previousValue);
-});
+export const getPosts = (data) => {
+  const parser = new DOMParser();
+  const doc1 = parser.parseFromString(data.data.contents, 'application/xml');
 
-const pushUrl = () => {
-  watchedState.arrayUrl.push(watchedState.valuefrominput);
-};
+  if (doc1.querySelector('parsererror') === null) {
+    const title = [doc1.querySelector('title').textContent];
+    const description = [doc1.querySelector('description').textContent];
+    const items = doc1.querySelectorAll('item');
 
-// Hexlet All origins
-const parseData = (urlAddress) => {
-  let titlesArr = [];
-  let linksArr = [];
-  let feedsTitlesArr = [];
-  let feedsDescriptionsArr = [];
-  fetch(
-    `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(
-      urlAddress
-    )}`
-  )
-    .then((response) => {
-      if (response.ok) return response.json();
-      throw new Error("Network response was not ok.");
-    })
-    .then((data) => {
-      const parser = new DOMParser();
-      const doc1 = parser.parseFromString(data.contents, "application/xml");
-      console.log(doc1);
-      const titlesNode = doc1.querySelectorAll("item title");
-      const linksNode = doc1.querySelectorAll("item link");
-      const FeedtitlesNode = doc1.querySelectorAll("channel title");
-      const FeeddescriptionsNode = doc1.querySelectorAll("channel description");
-      const titles = Array.from(titlesNode);
-      const links = Array.from(linksNode);
-      const Feedtitles = Array.from(FeedtitlesNode);
-      const FeedDescriptions = Array.from(FeeddescriptionsNode);
+    const posts = [];
 
-      for (let i = 0; i < titles.length; i++) {
-        titlesArr.push(titles[i].innerHTML);
-        linksArr.push(links[i].innerHTML);
-        feedsTitlesArr.push(Feedtitles[i].innerHTML);
-      }
-
-      for (let i = 0; i < FeedDescriptions.length; i++) {
-        feedsDescriptionsArr.push(FeedDescriptions[i].innerHTML);
-      }
-
-      watchedState.titles = titlesArr;
-      watchedState.links = linksArr;
-      watchedState.feedsDescriptions = feedsDescriptionsArr;
-      watchedState.feedsTitles = feedsTitlesArr;
-
-      let myTitle = document.createElement("div");
-      myTitle.innerHTML = watchedState.feedsTitles[0];
-      myTitle.className = "title";
-      document.body.append(myTitle);
-
-      let myDescription = document.createElement("div");
-      myDescription.innerHTML = watchedState.feedsDescriptions[0];
-      myDescription.className = "description";
-      document.body.append(myDescription);
-
-      for (let l = 0; l < mystate.titles.length; l++) {
-        let myLink = document.createElement("a");
-        myLink.innerHTML = mystate.titles[l];
-        myLink.setAttribute("href", mystate.links[l]);
-        myLink.className = "link";
-        document.body.append(myLink);
-      }
+    items.forEach((el) => {
+      const name = el.querySelector('title').textContent;
+      const postDescription = el.querySelector('description').textContent;
+      const link = el.querySelector('link').textContent;
+      posts.push({
+        name,
+        postDescription,
+        isReaded: false,
+        id: _.uniqueId(),
+        link,
+      });
     });
 
-  setTimeout(() => {
-    console.log("this is the first message");
-    parseData();
-  }, 5000);
+    const result = { title, description, posts };
+    console.log(result);
+    console.log('from addposts');
+    return result;
+  }
+  throw new Error('OOps!!:)) Network response was parcerror. This msg is from appPosts func');
 };
 
-export { pushUrl, parseData };
+export const getUpdatedPost = (data) => {
+  const parser = new DOMParser();
+  const doc1 = parser.parseFromString(data.data.contents, 'application/xml');
+
+  if (doc1.querySelector('parsererror') === null) {
+    const title = [doc1.querySelector('title').textContent];
+    const description = [doc1.querySelector('description').textContent];
+    const items = doc1.querySelectorAll('item');
+
+    const updatedPosts = [];
+    items.forEach((el) => {
+      const name = el.querySelector('title').textContent;
+      const postDescription = el.querySelector('description').textContent;
+      const link = el.querySelector('link').textContent;
+      updatedPosts.push({
+        name,
+        postDescription,
+        isReaded: false,
+        id: _.uniqueId('updated_'),
+        link,
+      });
+    });
+
+    const result = { title, description, updatedPosts };
+
+    return result;
+  }
+  throw new Error('OOps!!:)) Network response was parcerror. From getUpdatedPosts this msg.');
+};
+
+export const pushUrl = (state, value) => {
+  state.push(value);
+};
