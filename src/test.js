@@ -1,28 +1,56 @@
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  watchedState.valuefrominput = formElement.value;
-  const validDataInput = schema.validate({ name: watchedState.valuefrominput }, { strict: true });
+export const getFirstData = (urlAddress) => {
+  axios
+    .get(
+      `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(urlAddress)}`,
+    )
+    .then((data) => {
+      if (formElement.value === urlAddress) {
+        const firstData = getPosts(data);
+        watchedState.feed = firstData;
+        document.getElementById('output').innerHTML = i18next.t('RSS успешно загружен');
+        formElement.value = '';
+      }
+    })
+    .catch(() => {
+      console.log('Тут должна появиться ошибка, если с сетью проблемы');
+      document.getElementById('output').innerHTML = i18next.t('Ресурс не содержит валидный RSS');
+    });
+};
 
-  validDataInput.then((result) => {
-    pushUrl(watchedState.arrayUrl, watchedState.valuefrominput);
-    if (isDoublesinArr(watchedState.arrayUrl)) {
-      document.getElementById('url-input').style.border = '4px solid red';
-      document.getElementById('output').innerHTML = i18next.t('RSS уже существует');
-      formElement.value = '';
-      console.log(`you have doubles in inputs ${result}`);
-    } else {
-      parseData(formElement.value);
-      console.log(mystate.feed);
-      document.getElementById('url-input').style.border = 'none';
-      console.log('All right! Theres no mistakes and doubles in inputs!');
+export const getNextData = (urlAddress) => {
+  axios
+    .get(
+      `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(urlAddress)}`,
+    )
+    .then((data) => {
+      const updatedData = getPosts(data);
+      const updatedPosts = updatedData.posts;
+      const previousPosts = mystate.feed.posts;
+
+      const updatedTitles = updatedData.title;
+      const updatedDescriptions = updatedData.description;
+
+      const PrevAndUpdatedPosts = [...updatedPosts, ...previousPosts];
+
+      const resultPosts = _.uniqBy(PrevAndUpdatedPosts, 'name');
+
+      resultTitles.push(updatedTitles);
+      console.log(_.uniq(resultTitles.flat()));
+      console.log('resultTitles');
+
+      resultDescriptions.push(updatedDescriptions);
+      console.log(_.uniq(resultDescriptions.flat()));
+      console.log('resultDescriptions');
+
+      watchedState.feed.posts = resultPosts;
+      watchedState.feed.title = _.uniq(resultTitles.flat());
+      watchedState.feed.description = _.uniq(resultDescriptions.flat());
+      console.log('previousData');
       document.getElementById('output').innerHTML = i18next.t('RSS успешно загружен');
-
       formElement.value = '';
-    }
-  }, (error) => {
-    document.getElementById('url-input').style.border = '4px solid red';
-    document.getElementById('output').innerHTML = i18next.t('Вы ввели неправильный URL');
-    formElement.value = '';
-    console.log(`oops!${error}`);
-  });
-});
+    })
+    .catch(() => {
+      console.log('Тут должна появиться ошибка, если с сетью проблемы');
+      document.getElementById('output').innerHTML = i18next.t('Ошибка сети');
+    });
+};

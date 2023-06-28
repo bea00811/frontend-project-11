@@ -1,81 +1,97 @@
-export const renderPostsFirstly = (state) => {
-  console.log(state);
-  console.log('this is state');
+export const renderPostsFirstly = (state, viewMessage, i18next) => {
+  // console.log(state);
+  // console.log('this is state');
 
-  const posts = document.querySelector('.posts');
-
-  const myContainer = document.createElement('ul');
-  myContainer.classList.add('posts-container');
-  posts.append(myContainer);
-
+  const newList = document.createElement('ul');
+  newList.className = 'newlist';
   for (let i = 0; i < state.posts.length; i += 1) {
     const myListEl = document.createElement('li');
     const myLink = document.createElement('a');
     myLink.innerHTML = state.posts[i].name;
     myLink.setAttribute('href', state.posts[i].link);
     myLink.setAttribute('target', '_blank');
-    myLink.className = 'link';
-    myListEl.appendChild(myLink);
-    myContainer.append(myListEl);
-
     if (state.posts[i].isReaded === false) {
       myLink.classList.add('fw-bold');
     } else {
       myLink.classList.add('fw-normal');
     }
     myLink.setAttribute('data-id', state.posts[i].id);
+    const button = document.createElement('button');
+    button.textContent = i18next.t(viewMessage);
+    button.setAttribute('data-bs-toggle', 'modal');
+    button.classList.add('btn', 'btn-primary');
+    button.setAttribute('data-bs-target', '#exampleModal');
+    button.setAttribute('data-id', state.posts[i].id);
+    myListEl.append(myLink);
+    myListEl.append(button);
+    newList.append(myListEl);
   }
+
+  const oldList = document.querySelector('.posts-list');
+  oldList.replaceChildren(...newList.children);
 };
 
 export const renderFeedFyrstly = (state) => {
-  const feed = document.querySelector('.feeds');
+  const { title, description, posts } = state;
   console.log(state);
-  console.log(state.title);
+  console.log(title);
+  console.log(description);
+  console.log(posts);
+  console.log('renderfeedfirstly');
+
+  const newList1 = document.createElement('ul');
+  newList1.className = 'newlist';
 
   for (let i = state.title.length - 1; i >= 0; i -= 1) {
-    const test = document.createElement('li');
-    const test2 = document.createElement('h4');
-    const test3 = document.createElement('p');
-    test2.innerHTML = state.title[i];
-    test3.innerHTML = state.description[i];
-    test.appendChild(test2);
-    test.appendChild(test3);
-    feed.appendChild(test);
+    const listItem = document.createElement('li');
+    const title1 = document.createElement('h4');
+    const description1 = document.createElement('p');
+    title1.innerHTML = state.title[i];
+    description1.innerHTML = state.description[i];
+    listItem.appendChild(title1);
+    listItem.appendChild(description1);
+    newList1.append(listItem);
   }
+
+  const oldList1 = document.querySelector('.feeds-list');
+  oldList1.replaceChildren(...newList1.children);
 };
 
-export const renderPosts = (state) => {
-  const myContainer1 = document.querySelector('.posts-container');
-  myContainer1.innerHTML = '';
-  for (let i = 0; i < state.posts.length; i += 1) {
-    const myListEl = document.createElement('li');
-    const myLink = document.createElement('a');
-    myLink.innerHTML = state.posts[i].name;
-    myLink.setAttribute('href', state.posts[i].link);
-    myLink.setAttribute('target', '_blank');
-    myLink.className = 'link';
-    myListEl.appendChild(myLink);
-    myContainer1.append(myListEl);
-    if (state.posts[i].isReaded === false) {
-      myLink.classList.add('fw-bold');
-    } else {
-      myLink.classList.add('fw-normal');
-    }
-    myLink.setAttribute('data-id', state.posts[i].id);
-  }
-};
+export const renderModal = (item) => {
+  console.log(item);
+  console.log(item.name);
+  console.log(item.isReaded);
 
-export const renderFeed = (state) => {
-  const feed = document.querySelector('.feeds');
-  feed.innerHTML = '';
-  for (let i = state.title.length - 1; i >= 0; i -= 1) {
-    const test = document.createElement('li');
-    const test2 = document.createElement('h4');
-    const test3 = document.createElement('p');
-    test2.innerHTML = state.title[i];
-    test3.innerHTML = state.description[i];
-    test.appendChild(test2);
-    test.appendChild(test3);
-    feed.appendChild(test);
+  console.log('renderModal');
+  // condocument.getElementById('modal-container')
+
+  const description = document.querySelector('.modal-body');
+  const title = document.getElementById('exampleModalLabel');
+
+  title.innerHTML = item.name;
+  description.innerHTML = item.postDescription;
+
+  const linkContainer = document.querySelector('.link-container');
+  const linkPodContainer = document.createElement('div');
+  const link = document.createElement('a');
+
+  link.innerHTML = 'Читать полностью';
+  link.setAttribute('href', item.link);
+  link.setAttribute('target', '_blank');
+  link.classList.add('btn', 'btn-primary', 'full-article');
+  linkPodContainer.appendChild(link);
+  linkContainer.replaceChildren(...linkPodContainer.children);
+
+  linkContainer.appendChild = link;
+  console.log(link);
+  console.log('link');
+
+  // const line = document.querySelector()
+
+  if (item.isReaded === true) {
+    link.classList.add('red');
+  } else {
+    link.classList.add('fw-normal');
   }
+  // read.append(link);
 };

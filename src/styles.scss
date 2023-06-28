@@ -1,7 +1,14 @@
-@import "~bootstrap/scss/bootstrap";
+@import '~bootstrap/scss/bootstrap';
 
 body {
   color: black;
+}
+
+.fw-normal {
+  font-weight: 100 !important;
+}
+.red {
+  color: red !important;
 }
 
 .title {
@@ -12,4 +19,14 @@ body {
 h3 {
   color: gray;
   margin-bottom: 35px;
+}
+.text-danger {
+  color: red;
+}
+
+.posts-list li {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 0;
+  align-items: center;
 }

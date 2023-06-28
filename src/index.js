@@ -7,12 +7,8 @@ import 'bootstrap';
 import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
-import {
-  pushUrl, getPosts, getUpdatedPost, isDoublesinArr,
-} from './controllers.js';
-import {
-  renderFeedFyrstly, renderPostsFirstly, renderPosts, renderFeed,
-} from './view.js';
+import { getPosts, preparePostsforState } from './controllers.js';
+import { renderFeedFyrstly, renderPostsFirstly, renderModal } from './view.js';
 
 i18next.init({
   lng: 'ru', // if you're using a language detector, do not define the lng option
@@ -20,80 +16,107 @@ i18next.init({
   resources: {
     ru: {
       translation: {
-        doubleurl: 'RSS уже существует',
-        invalidUrl: 'Вы ввели неправильный URL',
+        double: 'RSS уже существует',
+        valid: 'Ссылка должна быть валидным URL',
+        badurl: 'Ресурс не содержит валидный RSS',
+        mistake: 'Ошибка сети',
+        success: 'RSS успешно загружен',
+        empty: 'Не должно быть пустым',
+        viewMessage: 'Посмотреть',
       },
     },
   },
 });
 
 const mystate = {
+  repeat: null,
   valuefrominput: ' ',
   arrayUrl: [],
-  feed: null,
+  feed: {
+    title: [],
+    description: [],
+    posts: [],
+  },
 };
 
 const watchedState = onChange(mystate, (path, value, previousValue) => {
-  console.log('path:', path);
-  console.log('value:', value);
-  console.log('previousValue:', previousValue);
+  console.log(path);
+  console.log(value);
+  console.log(previousValue);
   switch (path) {
-    case 'feed':
-      renderFeedFyrstly(mystate.feed);
-      renderPostsFirstly(mystate.feed);
-      break;
     case 'feed.posts':
-      renderPosts(mystate.feed);
+      renderPostsFirstly(mystate.feed, 'viewMessage', i18next);
+      renderFeedFyrstly(mystate.feed);
       break;
     case 'feed.title':
-      renderFeed(mystate.feed);
+      renderFeedFyrstly(mystate.feed);
+      break;
+    case 'feed.description':
+      renderFeedFyrstly(mystate.feed);
       break;
 
     default:
       console.log('nothing changed');
   }
 });
+const descriptions = [];
+const titles = [];
 
-const resultTitles = [];
-const resultDescriptions = [];
 const getData = (urlAddress) => {
   axios
     .get(
       `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(urlAddress)}`,
     )
     .then((data) => {
-      if (mystate.feed === null) {
-        const firstData = getPosts(data);
-        watchedState.feed = firstData;
-      }
+      const firstData = getPosts(data);
 
-      const updatedData = getUpdatedPost(data);
-      const { updatedPosts } = updatedData;
+      const { title, description, posts } = firstData;
       const previousPosts = mystate.feed.posts;
 
-      const updatedTitles = updatedData.title;
-      const updatedDescriptions = updatedData.description;
-
-      const PrevAndUpdatedPosts = [...updatedPosts, ...previousPosts];
-
+      const PrevAndUpdatedPosts = [...posts, ...previousPosts];
       const resultPosts = _.uniqBy(PrevAndUpdatedPosts, 'name');
-
-      resultTitles.push(updatedTitles);
-      console.log(_.uniq(resultTitles.flat()));
-      console.log('resultTitles');
-
-      resultDescriptions.push(updatedDescriptions);
-      console.log(_.uniq(resultDescriptions.flat()));
-      console.log('resultDescriptions');
+      titles.push(title);
+      descriptions.push(description);
+      const resultTitles = _.uniq(titles);
+      const resultDescriptions = _.uniq(descriptions);
+      console.log('description');
 
       watchedState.feed.posts = resultPosts;
-      watchedState.feed.title = _.uniq(resultTitles.flat());
-      watchedState.feed.description = _.uniq(resultDescriptions.flat());
-      console.log('previousData');
+      watchedState.feed.title = resultTitles;
+      watchedState.feed.description = resultDescriptions;
+
+      document.getElementById('output').innerHTML = i18next.t('success');
+      formElement.value = '';
     })
     .catch(() => {
-      console.log('error');
+      document.getElementById('output').innerHTML = i18next.t('badurl');
     });
+};
+
+const getData2 = (urlAddress) => {
+  axios
+    .get(
+      `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(urlAddress)}`,
+    )
+    .then((data) => {
+      const firstData = getPosts(data);
+
+      const { title, description, posts } = firstData;
+      const previousPosts = mystate.feed.posts;
+
+      const PrevAndUpdatedPosts = [...posts, ...previousPosts];
+      const resultPosts = _.uniqBy(PrevAndUpdatedPosts, 'name');
+      titles.push(title);
+      descriptions.push(description);
+      const resultTitles = _.uniq(titles);
+      const resultDescriptions = _.uniq(descriptions);
+      console.log('description');
+
+      watchedState.feed.posts = resultPosts;
+      watchedState.feed.title = resultTitles;
+      watchedState.feed.description = resultDescriptions;
+    })
+    .catch(() => {});
 };
 
 const schema = yup.object({
@@ -108,39 +131,50 @@ const parseData = (urlAddress) => {
   getData(urlAddress);
 
   const checkRss = (url) => {
-    getData(url);
     setTimeout(() => {
+      getData(url);
       checkRss(url);
-    }, 12000);
+    }, 5000);
   };
 
   checkRss(urlAddress);
 };
 
 form.addEventListener('submit', (e) => {
+  console.log(e.target.querySelector('input').value);
+  const currentValue = e.target.querySelector('input').value;
+  console.log('e.target.value');
   e.preventDefault();
   watchedState.valuefrominput = formElement.value;
+
+  if (watchedState.valuefrominput === '') {
+    document.getElementById('output').innerHTML = i18next.t('empty');
+    return;
+  }
   const validDataInput = schema.validate({ name: watchedState.valuefrominput }, { strict: true });
 
   validDataInput.then((result) => {
     if (!watchedState.arrayUrl.includes(watchedState.valuefrominput)) {
       watchedState.arrayUrl.push(watchedState.valuefrominput);
-      parseData(formElement.value);
-      console.log(mystate.feed);
+      parseData(currentValue);
       document.getElementById('url-input').style.border = 'none';
-      console.log('All right! Theres no mistakes and doubles in inputs!');
-      document.getElementById('output').innerHTML = i18next.t('RSS успешно загружен');
-      formElement.value = '';
     } else {
       document.getElementById('url-input').style.border = '4px solid red';
-      document.getElementById('output').innerHTML = i18next.t('RSS уже существует');
-      formElement.value = '';
-      console.log(`you have doubles in inputs ${result}`);
+      document.getElementById('output').innerHTML = i18next.t('double');
     }
   }, (error) => {
     document.getElementById('url-input').style.border = '4px solid red';
-    document.getElementById('output').innerHTML = i18next.t('Вы ввели неправильный URL');
-    formElement.value = '';
+    document.getElementById('output').innerHTML = i18next.t('valid');
     console.log(`oops!${error}`);
   });
+});
+
+document.querySelector('.posts-list').addEventListener('click', (e) => {
+  console.log(e.target.getAttribute('data-id'));
+  const item = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));
+  item.isReaded = true;
+  e.target.parentNode.querySelector('a').className = 'fw-normal';
+  console.log(e.target.parentNode.querySelector('a'));
+  console.log('itemparentNode');
+  renderModal(item);
 });

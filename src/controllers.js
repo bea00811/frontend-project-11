@@ -1,30 +1,12 @@
 import * as _ from 'lodash';
 
-export const isDoublesinArr = (arrayOfUrl) => {
-  const countItems = {};
-  // если элемент уже был, то прибавляем 1, если нет - устанавливаем 1
-  arrayOfUrl.forEach((item) => {
-    if (countItems[item]) {
-      countItems[item] += 1;
-    } else {
-      countItems[item] = 1;
-    }
-  });
-
-  const isDouble = Object.keys(countItems)
-    .map((item) => countItems[item] > 1)
-    .includes(true);
-
-  return isDouble;
-};
-
 export const getPosts = (data) => {
   const parser = new DOMParser();
   const doc1 = parser.parseFromString(data.data.contents, 'application/xml');
 
   if (doc1.querySelector('parsererror') === null) {
-    const title = [doc1.querySelector('title').textContent];
-    const description = [doc1.querySelector('description').textContent];
+    const title = doc1.querySelector('title').textContent;
+    const description = doc1.querySelector('description').textContent;
     const items = doc1.querySelectorAll('item');
 
     const posts = [];
@@ -50,32 +32,19 @@ export const getPosts = (data) => {
   throw new Error('OOps!!:)) Network response was parcerror. This msg is from appPosts func');
 };
 
-export const getUpdatedPost = (data) => {
-  const parser = new DOMParser();
-  const doc1 = parser.parseFromString(data.data.contents, 'application/xml');
+export const preparePostsforState = (data) => {
+  const { title, description, posts } = data;
+  const previousPosts = mystate.feed.posts;
 
-  if (doc1.querySelector('parsererror') === null) {
-    const title = [doc1.querySelector('title').textContent];
-    const description = [doc1.querySelector('description').textContent];
-    const items = doc1.querySelectorAll('item');
-
-    const updatedPosts = [];
-    items.forEach((el) => {
-      const name = el.querySelector('title').textContent;
-      const postDescription = el.querySelector('description').textContent;
-      const link = el.querySelector('link').textContent;
-      updatedPosts.push({
-        name,
-        postDescription,
-        isReaded: false,
-        id: _.uniqueId('updated_'),
-        link,
-      });
-    });
-
-    const result = { title, description, updatedPosts };
-
-    return result;
-  }
-  throw new Error('OOps!!:)) Network response was parcerror. From getUpdatedPosts this msg.');
+  const PrevAndUpdatedPosts = [...posts, ...previousPosts];
+  const resultPosts = _.uniqBy(PrevAndUpdatedPosts, 'name');
+  titles.push(title);
+  descriptions.push(description);
+  const resultTitles = _.uniq(titles);
+  const resultDescriptions = _.uniq(descriptions);
+  return {
+    resultPosts,
+    resultDescriptions,
+    resultTitles,
+  };
 };

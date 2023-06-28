@@ -22,8 +22,7 @@
                     <input
                       id="url-input"
                       autofocus
-                      required
-                      name="url"
+                       name="url"
                       aria-label="url"
                       class="form-control w-100"
                       placeholder="ссылка RSS"
@@ -47,8 +46,8 @@
             <p class="mt-2 mb-0 text-muted">
               Пример: https://ru.hexlet.io/lessons.rss
             </p>
-            <p id="output" class="mt-2 mb-0 text-muted"></p>
-            <p id="success-and-errors-output" class="mt-2 mb-0 text-muted"></p>
+            <p id="output" class="mt-2 mb-0  text-danger"></p>
+            <p id="success-and-errors-output" class="mt-2 mb-0 text-muted "></p>
             <p class="feedback m-0 position-absolute small text-danger"></p>
           </div>
         </div>
@@ -56,14 +55,37 @@
       </section>
       <section class="container-fluid container-xxl p-5">
         <div class="row">
-          <div class="col-md-10 col-lg-8 order-1 mx-auto posts"></div>
-          <div
-            class="col-md-10 col-lg-4 mx-auto order-0 order-lg-1 feeds"
-          ></div>
+          <div class="col-md-10 col-lg-8 order-1 mx-auto posts">
+            <ul class="posts-list"></ul>
+          </div>
+          <div class="col-md-10 col-lg-4 mx-auto order-0 order-lg-1 feeds"><ul class="feeds-list"></ul></div>
         </div>
       </section>
     </main>
    
     <div id="point2"></div>
+<!-- Кнопка-триггер модального окна -->
+<!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Запустите демо модального окна
+</button> -->
+
+<!-- Модальное окно -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Заголовок модального окна</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        <div class="link-container"></div>
+      </div>
+    </div>
+  </div>
+</div>
   </body>
 </html>
