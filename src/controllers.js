@@ -30,8 +30,8 @@ export const getPosts = (data) => {
     console.log('from addposts');
     return result;
   }
-  // throw new Error('OOps!!:)) Network response was parcerror. This msg is from appPosts func');
-  document.getElementById('output').innerHTML = i18next.t('badurl');
+  throw new Error('OOps!!:)) Network response was parcerror. This msg is from appPosts func');
+  // document.getElementById('output').innerHTML = i18next.t('badurl');
 };
 
 export const preparePostsforState = (data) => {
