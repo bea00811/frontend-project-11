@@ -61,7 +61,6 @@ const watchedState = onChange(mystate, (path, value, previousValue) => {
 });
 const descriptions = [];
 const titles = [];
-const formElement = document.getElementById('url-input');
 
 const getData = (urlAddress) => {
   axios
@@ -70,12 +69,11 @@ const getData = (urlAddress) => {
     )
     .then((data) => {
       const previousPosts = mystate.feed.posts;
-      const firstData = getPosts(data);
-      const { title, description, posts } = firstData;
 
       if (!mystate.feeds.includes(urlAddress)) {
         mystate.feeds.push(urlAddress);
-
+        const firstData = getPosts(data);
+        const { title, description, posts } = firstData;
         watchedState.feed.posts = posts;
         watchedState.feed.title.push(title);
         watchedState.feed.description.push(description);
@@ -104,11 +102,37 @@ const getData = (urlAddress) => {
     });
 };
 
+const getData2 = (urlAddress) => {
+  axios
+    .get(
+      `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(urlAddress)}`,
+    )
+    .then((data) => {
+      const firstData = getPosts(data);
+
+      const { title, description, posts } = firstData;
+      const previousPosts = mystate.feed.posts;
+
+      const PrevAndUpdatedPosts = [...posts, ...previousPosts];
+      const resultPosts = _.uniqBy(PrevAndUpdatedPosts, 'name');
+      titles.push(title);
+      descriptions.push(description);
+      const resultTitles = _.uniq(titles);
+      const resultDescriptions = _.uniq(descriptions);
+      console.log('description');
+
+      watchedState.feed.posts = resultPosts;
+      watchedState.feed.title = resultTitles;
+      watchedState.feed.description = resultDescriptions;
+    })
+    .catch(() => {});
+};
+
 const schema = yup.object({
   name: yup.string().url().nullable(),
 });
 
-// const formElement = document.getElementById('url-input');
+const formElement = document.getElementById('url-input');
 const form = document.getElementById('rss-form');
 
 // Hexlet All origins
@@ -138,7 +162,7 @@ form.addEventListener('submit', (e) => {
   }
   const validDataInput = schema.validate({ name: watchedState.valuefrominput }, { strict: true });
 
-  validDataInput.then(() => {
+  validDataInput.then((result) => {
     if (!watchedState.arrayUrl.includes(watchedState.valuefrominput)) {
       watchedState.arrayUrl.push(watchedState.valuefrominput);
       parseData(currentValue);
@@ -156,10 +180,10 @@ form.addEventListener('submit', (e) => {
 
 document.querySelector('.posts-list').addEventListener('click', (e) => {
   console.log(e.target.getAttribute('data-id'));
-  const element = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));
-  element.isReaded = true;
+  const item = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));
+  item.isReaded = true;
   e.target.parentNode.querySelector('a').className = 'fw-normal';
   console.log(e.target.parentNode.querySelector('a'));
   console.log('itemparentNode');
-  renderModal(element);
+  renderModal(item);
 });
