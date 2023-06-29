@@ -84,6 +84,8 @@ const getData = (urlAddress) => {
         document.getElementById('output').innerHTML = i18next.t('success');
         formElement.value = '';
       } else {
+        const firstData = getPosts(data);
+        const { title, description, posts } = firstData;
         const PrevAndUpdatedPosts = [...previousPosts, ...posts];
         const resultPosts = _.uniqBy(PrevAndUpdatedPosts, 'name');
         titles.push(title);
