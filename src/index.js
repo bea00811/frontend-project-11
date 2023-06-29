@@ -1,5 +1,5 @@
 // @ts-check
-import * as _ from 'lodash';
+import * as _ from'lodash';
 import onChange from 'on-change';
 import './style.css';
 import './styles.scss';
@@ -7,7 +7,7 @@ import 'bootstrap';
 import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
-import { getPosts, preparePostsforState } from './controllers.js';
+import getPosts  from './controllers.js';
 import { renderFeedFyrstly, renderPostsFirstly, renderModal } from './view.js';
 
 i18next.init({
