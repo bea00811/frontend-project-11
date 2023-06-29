@@ -95,7 +95,7 @@ const getData = (urlAddress) => {
       }
     })
     .catch(() => {
-      document.getElementById('output').innerHTML = i18next.t('badurl');
+      document.getElementById('output').innerHTML = i18next.t('mistake');
     });
 };
 
