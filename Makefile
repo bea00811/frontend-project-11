@@ -1,6 +1,3 @@
-develop:
-	npx webpack serve
-
 install:
 	npm ci
 

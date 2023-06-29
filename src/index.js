@@ -1,7 +1,6 @@
 // @ts-check
 import * as _ from 'lodash';
 import onChange from 'on-change';
-import './style.css';
 import './styles.scss';
 import 'bootstrap';
 import * as yup from 'yup';
