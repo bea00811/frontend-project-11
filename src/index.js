@@ -6,7 +6,7 @@ import 'bootstrap';
 import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
-import { getPosts } from './controllers.js';
+import getPosts from './controllers.js';
 import { renderFeedFyrstly, renderPostsFirstly, renderModal } from './view.js';
 
 i18next.init({
@@ -61,6 +61,7 @@ const watchedState = onChange(mystate, (path, value, previousValue) => {
 });
 const descriptions = [];
 const titles = [];
+const formElement = document.getElementById('url-input');
 
 const getData = (urlAddress) => {
   axios
@@ -132,7 +133,7 @@ const schema = yup.object({
   name: yup.string().url().nullable(),
 });
 
-const formElement = document.getElementById('url-input');
+// const formElement = document.getElementById('url-input');
 const form = document.getElementById('rss-form');
 
 // Hexlet All origins

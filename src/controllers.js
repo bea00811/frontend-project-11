@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 // import i18next from 'i18next';
 
-export const getPosts = (data) => {
+const getPosts = (data) => {
   const parser = new DOMParser();
   const doc1 = parser.parseFromString(data.data.contents, 'application/xml');
 
@@ -34,19 +34,4 @@ export const getPosts = (data) => {
   // document.getElementById('output').innerHTML = i18next.t('badurl');
 };
 
-export const preparePostsforState = (data) => {
-  const { title, description, posts } = data;
-  const previousPosts = mystate.feed.posts;
-
-  const PrevAndUpdatedPosts = [...posts, ...previousPosts];
-  const resultPosts = _.uniqBy(PrevAndUpdatedPosts, 'name');
-  titles.push(title);
-  descriptions.push(description);
-  const resultTitles = _.uniq(titles);
-  const resultDescriptions = _.uniq(descriptions);
-  return {
-    resultPosts,
-    resultDescriptions,
-    resultTitles,
-  };
-};
+export default getPosts;
