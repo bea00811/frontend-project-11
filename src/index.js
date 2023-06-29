@@ -30,6 +30,7 @@ i18next.init({
 
 const mystate = {
   repeat: null,
+  feeds:[],
   valuefrominput: ' ',
   arrayUrl: [],
   feed: {
@@ -68,26 +69,32 @@ const getData = (urlAddress) => {
       `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(urlAddress)}`,
     )
     .then((data) => {
-      const firstData = getPosts(data);
-
-      const { title, description, posts } = firstData;
       const previousPosts = mystate.feed.posts;
 
-      const PrevAndUpdatedPosts = [...posts, ...previousPosts];
-      const resultPosts = _.uniqBy(PrevAndUpdatedPosts, 'name');
-      titles.push(title);
-      descriptions.push(description);
-      const resultTitles = _.uniq(titles);
-      const resultDescriptions = _.uniq(descriptions);
-      console.log('description');
+      if (!mystate.feeds.includes(urlAddress)) {
+        mystate.feeds.push(urlAddress)
+        const firstData = getPosts(data);
+        const { title, description, posts } = firstData;
+        watchedState.feed.posts = posts;
+        watchedState.feed.title.push(title);
+        watchedState.feed.description.push(description);
 
-      watchedState.feed.posts = resultPosts;
-      watchedState.feed.title = resultTitles;
-      watchedState.feed.description = resultDescriptions;
+        document.getElementById('output').innerHTML = i18next.t('success');
+        formElement.value = '';
+      } else {
+        const PrevAndUpdatedPosts = [...previousPosts, ...posts];
+        const resultPosts = _.uniqBy(PrevAndUpdatedPosts, 'name');
+        titles.push(title);
+        descriptions.push(description);
+        const resultTitles = _.uniq(titles);
+        const resultDescriptions = _.uniq(descriptions);
+        console.log('description');
+        watchedState.feed.posts = resultPosts;
+        watchedState.feed.title = resultTitles;
+        watchedState.feed.description = resultDescriptions;
 
-      document.getElementById('output').innerHTML = i18next.t('success');
-      formElement.value = '';
-    })
+    }
+   })
     .catch(() => {
       document.getElementById('output').innerHTML = i18next.t('badurl');
     });
