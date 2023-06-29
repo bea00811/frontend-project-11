@@ -1,5 +1,5 @@
 // @ts-check
-import * as _ from'lodash';
+import * as _ from 'lodash';
 import onChange from 'on-change';
 import './style.css';
 import './styles.scss';
@@ -7,7 +7,7 @@ import 'bootstrap';
 import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
-import getPosts  from './controllers.js';
+import { getPosts } from './controllers.js';
 import { renderFeedFyrstly, renderPostsFirstly, renderModal } from './view.js';
 
 i18next.init({
@@ -30,7 +30,7 @@ i18next.init({
 
 const mystate = {
   repeat: null,
-  feeds:[],
+  feeds: [],
   valuefrominput: ' ',
   arrayUrl: [],
   feed: {
@@ -72,7 +72,7 @@ const getData = (urlAddress) => {
       const previousPosts = mystate.feed.posts;
 
       if (!mystate.feeds.includes(urlAddress)) {
-        mystate.feeds.push(urlAddress)
+        mystate.feeds.push(urlAddress);
         const firstData = getPosts(data);
         const { title, description, posts } = firstData;
         watchedState.feed.posts = posts;
@@ -92,9 +92,8 @@ const getData = (urlAddress) => {
         watchedState.feed.posts = resultPosts;
         watchedState.feed.title = resultTitles;
         watchedState.feed.description = resultDescriptions;
-
-    }
-   })
+      }
+    })
     .catch(() => {
       document.getElementById('output').innerHTML = i18next.t('badurl');
     });
