@@ -9,6 +9,9 @@ import axios from 'axios';
 import getPosts from './controllers.js';
 import { renderFeedFyrstly, renderPostsFirstly, renderModal } from './view.js';
 
+const formElement = document.getElementById('url-input');
+const form = document.getElementById('rss-form');
+
 i18next.init({
   lng: 'ru', // if you're using a language detector, do not define the lng option
   debug: true,
@@ -102,38 +105,9 @@ const getData = (urlAddress) => {
     });
 };
 
-const getData2 = (urlAddress) => {
-  axios
-    .get(
-      `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(urlAddress)}`,
-    )
-    .then((data) => {
-      const firstData = getPosts(data);
-
-      const { title, description, posts } = firstData;
-      const previousPosts = mystate.feed.posts;
-
-      const PrevAndUpdatedPosts = [...posts, ...previousPosts];
-      const resultPosts = _.uniqBy(PrevAndUpdatedPosts, 'name');
-      titles.push(title);
-      descriptions.push(description);
-      const resultTitles = _.uniq(titles);
-      const resultDescriptions = _.uniq(descriptions);
-      console.log('description');
-
-      watchedState.feed.posts = resultPosts;
-      watchedState.feed.title = resultTitles;
-      watchedState.feed.description = resultDescriptions;
-    })
-    .catch(() => {});
-};
-
 const schema = yup.object({
   name: yup.string().url().nullable(),
 });
-
-const formElement = document.getElementById('url-input');
-const form = document.getElementById('rss-form');
 
 // Hexlet All origins
 const parseData = (urlAddress) => {
@@ -162,7 +136,7 @@ form.addEventListener('submit', (e) => {
   }
   const validDataInput = schema.validate({ name: watchedState.valuefrominput }, { strict: true });
 
-  validDataInput.then((result) => {
+  validDataInput.then(() => {
     if (!watchedState.arrayUrl.includes(watchedState.valuefrominput)) {
       watchedState.arrayUrl.push(watchedState.valuefrominput);
       parseData(currentValue);
@@ -180,10 +154,10 @@ form.addEventListener('submit', (e) => {
 
 document.querySelector('.posts-list').addEventListener('click', (e) => {
   console.log(e.target.getAttribute('data-id'));
-  const item = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));
-  item.isReaded = true;
+  const item1 = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));
+  item1.isReaded = true;
   e.target.parentNode.querySelector('a').className = 'fw-normal';
   console.log(e.target.parentNode.querySelector('a'));
   console.log('itemparentNode');
-  renderModal(item);
+  renderModal(item1);
 });
