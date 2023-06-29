@@ -70,11 +70,12 @@ const getData = (urlAddress) => {
     )
     .then((data) => {
       const previousPosts = mystate.feed.posts;
+      const firstData = getPosts(data);
+      const { title, description, posts } = firstData;
 
       if (!mystate.feeds.includes(urlAddress)) {
         mystate.feeds.push(urlAddress);
-        const firstData = getPosts(data);
-        const { title, description, posts } = firstData;
+
         watchedState.feed.posts = posts;
         watchedState.feed.title.push(title);
         watchedState.feed.description.push(description);
@@ -101,32 +102,6 @@ const getData = (urlAddress) => {
         document.getElementById('output').innerHTML = i18next.t('badurl');
       }
     });
-};
-
-const getData2 = (urlAddress) => {
-  axios
-    .get(
-      `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(urlAddress)}`,
-    )
-    .then((data) => {
-      const firstData = getPosts(data);
-
-      const { title, description, posts } = firstData;
-      const previousPosts = mystate.feed.posts;
-
-      const PrevAndUpdatedPosts = [...posts, ...previousPosts];
-      const resultPosts = _.uniqBy(PrevAndUpdatedPosts, 'name');
-      titles.push(title);
-      descriptions.push(description);
-      const resultTitles = _.uniq(titles);
-      const resultDescriptions = _.uniq(descriptions);
-      console.log('description');
-
-      watchedState.feed.posts = resultPosts;
-      watchedState.feed.title = resultTitles;
-      watchedState.feed.description = resultDescriptions;
-    })
-    .catch(() => {});
 };
 
 const schema = yup.object({
@@ -163,7 +138,7 @@ form.addEventListener('submit', (e) => {
   }
   const validDataInput = schema.validate({ name: watchedState.valuefrominput }, { strict: true });
 
-  validDataInput.then((result) => {
+  validDataInput.then(() => {
     if (!watchedState.arrayUrl.includes(watchedState.valuefrominput)) {
       watchedState.arrayUrl.push(watchedState.valuefrominput);
       parseData(currentValue);
@@ -181,10 +156,10 @@ form.addEventListener('submit', (e) => {
 
 document.querySelector('.posts-list').addEventListener('click', (e) => {
   console.log(e.target.getAttribute('data-id'));
-  const item = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));
-  item.isReaded = true;
+  const element = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));
+  element.isReaded = true;
   e.target.parentNode.querySelector('a').className = 'fw-normal';
   console.log(e.target.parentNode.querySelector('a'));
   console.log('itemparentNode');
-  renderModal(item);
+  renderModal(element);
 });
