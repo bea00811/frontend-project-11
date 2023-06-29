@@ -21,7 +21,7 @@ i18next.init({
         mistake: 'Ошибка сети',
         success: 'RSS успешно загружен',
         empty: 'Не должно быть пустым',
-        viewMessage: 'Посмотреть',
+        viewMessage: 'Просмотр',
       },
     },
   },

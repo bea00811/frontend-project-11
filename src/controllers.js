@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import i18next from 'i18next';
+// import i18next from 'i18next';
 
 export const getPosts = (data) => {
   const parser = new DOMParser();
