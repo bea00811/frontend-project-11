@@ -10,7 +10,7 @@ import {
   renderFeedFyrstly, renderPostsFirstly, renderModal, blockUi, unBlockUi,
 } from './view.js';
 
-const elements = {
+export const elements = {
   form: document.getElementById('rss-form'),
   formElement: document.getElementById('url-input'),
   input: document.getElementById('url-input'),
@@ -36,7 +36,7 @@ i18next.init({
   },
 });
 
-const mystate = {
+export const mystate = {
   formProcess: {
     errors: [],
     state: 'filling',
@@ -52,7 +52,7 @@ const mystate = {
   },
 };
 
-const watchedState = onChange(mystate, (path, value, previousValue) => {
+export const watchedState = onChange(mystate, (path, value, previousValue) => {
   console.log(path);
   console.log(value);
   console.log(previousValue);
@@ -100,7 +100,7 @@ const getData = (urlAddress, selectors) => {
         watchedState.feed.title.push(title);
         watchedState.feed.description.push(description);
 
-        document.getElementById('output').innerHTML = i18next.t('success');
+        elementsGetData.output.innerHTML = i18next.t('success');
         elementsGetData.formElement.value = '';
       } else {
         const firstData = getPosts(data);
@@ -143,7 +143,7 @@ const parseData = (urlAddress, elements1) => {
   checkRss(urlAddress, elements);
 };
 
-const run = (watchedState1, myState1, elements1) => {
+export const run = (watchedState1, myState1, elements1) => {
   const watchedStateRun = watchedState1;
   const mystateRun = myState1;
   const elementsRun = elements1;
@@ -171,17 +171,21 @@ const run = (watchedState1, myState1, elements1) => {
         elementsRun.input.style.border = '4px solid red';
         elementsRun.output.innerHTML = i18next.t('double');
         mystateRun.formProcess.state = 'error';
+        console.log(mystate.formProcess);
+        console.log('mystate.formProcess');
       }
     }, (error) => {
       elementsRun.input.style.border = '4px solid red';
       elementsRun.output.innerHTML = i18next.t('valid');
       mystateRun.formProcess.state = 'error';
+      console.log(mystate.formProcess);
+      console.log('mystate.formProcess');
       console.log(`oops!${error}`);
     });
   });
 };
-run(watchedState, mystate, elements);
-
+// run(watchedState, mystate, elements);
+// export default run;
 document.querySelector('.posts-list').addEventListener('click', (e) => {
   const item1 = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));
   item1.isReaded = true;

@@ -1,9 +1,7 @@
-// @ts-check
+// import onChange from 'on-change';
+// import i18next from 'i18next';
+import {
+  run, watchedState, mystate, elements,
+} from './index.js';
 
-import Example from './Example.js';
-
-export default () => {
-  const element = document.getElementById('point2');
-  const obj = new Example(element);
-  obj.init();
-};
+run(watchedState, mystate, elements);
