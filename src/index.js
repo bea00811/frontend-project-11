@@ -102,7 +102,6 @@ const getData = (urlAddress) => {
         descriptions.push(description);
         const resultTitles = _.uniq(titles);
         const resultDescriptions = _.uniq(descriptions);
-        console.log('description');
         watchedState.feed.posts = resultPosts;
         watchedState.feed.title = resultTitles;
         watchedState.feed.description = resultDescriptions;
@@ -136,28 +135,31 @@ const parseData = (urlAddress) => {
 };
 
 const run = (watchedState1, mystate1, elements1) => {
+  const watchedStateRun = watchedState1;
+  const mystateRun = mystate1;
+  const elementsRun = elements1;
   elements.form.addEventListener('submit', (e) => {
     const currentValue = e.target.querySelector('input').value;
     e.preventDefault();
-    watchedState1.valuefrominput = elements1.formElement.value;
-    if (watchedState1.valuefrominput === '') {
-      elements1.output.innerHTML = i18next.t('empty');
-      mystate1.formProcess.state = 'error';
+    watchedStateRun.valuefrominput = elementsRun.formElement.value;
+    if (watchedStateRun.valuefrominput === '') {
+      elementsRun.output.innerHTML = i18next.t('empty');
+      mystateRun.formProcess.state = 'error';
     }
     const validDataInput = schema.validate({ name: watchedState.valuefrominput }, { strict: true });
 
     validDataInput.then(() => {
-      if (!watchedState1.arrayUrl.includes(watchedState1.valuefrominput)) {
-        watchedState1.arrayUrl.push(watchedState1.valuefrominput);
+      if (!watchedStateRun.arrayUrl.includes(watchedStateRun.valuefrominput)) {
+        watchedStateRun.arrayUrl.push(watchedStateRun.valuefrominput);
         parseData(currentValue);
-        elements1.input.style.border = 'none';
+        elementsRun.input.style.border = 'none';
       } else {
-        elements1.input.style.border = '4px solid red';
-        elements1.output.innerHTML = i18next.t('double');
+        elementsRun.input.style.border = '4px solid red';
+        elementsRun.output.innerHTML = i18next.t('double');
       }
     }, (error) => {
-      elements1.input.style.border = '4px solid red';
-      elements1.output.innerHTML = i18next.t('valid');
+      elementsRun.input.style.border = '4px solid red';
+      elementsRun.output.innerHTML = i18next.t('valid');
       console.log(`oops!${error}`);
     });
   });
@@ -173,7 +175,7 @@ run(watchedState, mystate, elements);
 //     document.getElementById('output').innerHTML = i18next.t('empty');
 //     return;
 //   }
-//   const validDataInput = schema.validate({ name: watchedState.valuefrominput }, { strict: true });
+// const validDataInput = schema.validate({ name: watchedState.valuefrominput }, { strict: true });
 
 //   validDataInput.then(() => {
 //     if (!watchedState.arrayUrl.includes(watchedState.valuefrominput)) {
