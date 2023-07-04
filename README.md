@@ -14,10 +14,10 @@ make install
 ## Run
 
 ```sh
-make develop
+make run
 ```
 
 
 
 ## You may see project on Vercel
-https://vercel.com/bea00811/frontend-project-11-tnk7/4NMspq2c95k9e2fSTCeptr4h3Knq
+https://frontend-project-11-tnk7.vercel.app/

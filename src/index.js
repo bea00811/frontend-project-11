@@ -1,4 +1,3 @@
-// @ts-check
 import * as _ from 'lodash';
 import onChange from 'on-change';
 import './styles.scss';

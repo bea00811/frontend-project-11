@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-// import i18next from 'i18next';
 
 const getPosts = (data) => {
   const parser = new DOMParser();
@@ -26,12 +25,9 @@ const getPosts = (data) => {
     });
 
     const result = { title, description, posts };
-    console.log(result);
-    console.log('from addposts');
     return result;
   }
   throw new Error('OOps!!:)) Network response was parcerror. This msg is from appPosts func');
-  // document.getElementById('output').innerHTML = i18next.t('badurl');
 };
 
 export default getPosts;
