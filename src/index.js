@@ -15,7 +15,7 @@ const elements = {
   output: document.getElementById('output'),
 };
 
-// const formElement = document.getElementById('url-input');
+const formElement = document.getElementById('url-input');
 // const form = document.getElementById('rss-form');
 
 i18next.init({
