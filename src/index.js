@@ -15,8 +15,8 @@ const elements = {
   output: document.getElementById('output'),
 };
 
-const formElement = document.getElementById('url-input');
-const form = document.getElementById('rss-form');
+// const formElement = document.getElementById('url-input');
+// const form = document.getElementById('rss-form');
 
 i18next.init({
   lng: 'ru', // if you're using a language detector, do not define the lng option
@@ -139,25 +139,25 @@ const run = (watchedState1, mystate1, elements1) => {
   elements.form.addEventListener('submit', (e) => {
     const currentValue = e.target.querySelector('input').value;
     e.preventDefault();
-    watchedState.valuefrominput = elements.formElement.value;
-    if (watchedState.valuefrominput === '') {
-      elements.output.innerHTML = i18next.t('empty');
-      mystate.formProcess.state = 'error';
+    watchedState1.valuefrominput = elements1.formElement.value;
+    if (watchedState1.valuefrominput === '') {
+      elements1.output.innerHTML = i18next.t('empty');
+      mystate1.formProcess.state = 'error';
     }
     const validDataInput = schema.validate({ name: watchedState.valuefrominput }, { strict: true });
 
     validDataInput.then(() => {
-      if (!watchedState.arrayUrl.includes(watchedState.valuefrominput)) {
-        watchedState.arrayUrl.push(watchedState.valuefrominput);
+      if (!watchedState1.arrayUrl.includes(watchedState1.valuefrominput)) {
+        watchedState1.arrayUrl.push(watchedState1.valuefrominput);
         parseData(currentValue);
-        elements.input.style.border = 'none';
+        elements1.input.style.border = 'none';
       } else {
-        elements.input.style.border = '4px solid red';
-        elements.output.innerHTML = i18next.t('double');
+        elements1.input.style.border = '4px solid red';
+        elements1.output.innerHTML = i18next.t('double');
       }
     }, (error) => {
-      elements.input.style.border = '4px solid red';
-      elements.output.innerHTML = i18next.t('valid');
+      elements1.input.style.border = '4px solid red';
+      elements1.output.innerHTML = i18next.t('valid');
       console.log(`oops!${error}`);
     });
   });
