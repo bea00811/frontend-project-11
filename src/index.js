@@ -6,17 +6,17 @@ import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
 import getPosts from './controllers.js';
-import { renderFeedFyrstly, renderPostsFirstly, renderModal } from './view.js';
+import {
+  renderFeedFyrstly, renderPostsFirstly, renderModal, blockUi, unBlockUi,
+} from './view.js';
 
 const elements = {
   form: document.getElementById('rss-form'),
   formElement: document.getElementById('url-input'),
   input: document.getElementById('url-input'),
   output: document.getElementById('output'),
+  btn: document.querySelector('btn'),
 };
-
-const formElement = document.getElementById('url-input');
-// const form = document.getElementById('rss-form');
 
 i18next.init({
   lng: 'ru', // if you're using a language detector, do not define the lng option
@@ -67,7 +67,15 @@ const watchedState = onChange(mystate, (path, value, previousValue) => {
     case 'feed.description':
       renderFeedFyrstly(mystate.feed);
       break;
-
+    case 'formProcess.state':
+      if (value === 'filling') {
+        blockUi(elements);
+      } else if (value === 'error') {
+        unBlockUi(elements);
+      } else if (value === 'finished') {
+        unBlockUi(elements);
+      }
+      break;
     default:
       console.log('nothing changed');
   }
@@ -75,7 +83,8 @@ const watchedState = onChange(mystate, (path, value, previousValue) => {
 const descriptions = [];
 const titles = [];
 
-const getData = (urlAddress) => {
+const getData = (urlAddress, selectors) => {
+  const elementsGetData = selectors;
   axios
     .get(
       `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(urlAddress)}`,
@@ -92,7 +101,7 @@ const getData = (urlAddress) => {
         watchedState.feed.description.push(description);
 
         document.getElementById('output').innerHTML = i18next.t('success');
-        formElement.value = '';
+        elementsGetData.formElement.value = '';
       } else {
         const firstData = getPosts(data);
         const { title, description, posts } = firstData;
@@ -121,22 +130,22 @@ const schema = yup.object({
 });
 
 // Hexlet All origins
-const parseData = (urlAddress) => {
-  getData(urlAddress);
+const parseData = (urlAddress, elements) => {
+  getData(urlAddress, elements);
 
-  const checkRss = (url) => {
+  const checkRss = (url, elements) => {
     setTimeout(() => {
-      getData(url);
+      getData(url, elements);
       checkRss(url);
     }, 5000);
   };
 
-  checkRss(urlAddress);
+  checkRss(urlAddress, elements);
 };
 
-const run = (watchedState1, mystate1, elements1) => {
+const run = (watchedState1, myState1, elements1) => {
   const watchedStateRun = watchedState1;
-  const mystateRun = mystate1;
+  const mystateRun = myState1;
   const elementsRun = elements1;
   elements.form.addEventListener('submit', (e) => {
     const currentValue = e.target.querySelector('input').value;
@@ -145,53 +154,33 @@ const run = (watchedState1, mystate1, elements1) => {
     if (watchedStateRun.valuefrominput === '') {
       elementsRun.output.innerHTML = i18next.t('empty');
       mystateRun.formProcess.state = 'error';
+      console.log(mystate.formProcess);
+      console.log('mystate.formProcess');
     }
     const validDataInput = schema.validate({ name: watchedState.valuefrominput }, { strict: true });
 
     validDataInput.then(() => {
       if (!watchedStateRun.arrayUrl.includes(watchedStateRun.valuefrominput)) {
         watchedStateRun.arrayUrl.push(watchedStateRun.valuefrominput);
-        parseData(currentValue);
+        parseData(currentValue, elements);
         elementsRun.input.style.border = 'none';
+        mystateRun.formProcess.state = 'finished';
+        console.log(mystate.formProcess);
+        console.log('mystate.formProcess');
       } else {
         elementsRun.input.style.border = '4px solid red';
         elementsRun.output.innerHTML = i18next.t('double');
+        mystateRun.formProcess.state = 'error';
       }
     }, (error) => {
       elementsRun.input.style.border = '4px solid red';
       elementsRun.output.innerHTML = i18next.t('valid');
+      mystateRun.formProcess.state = 'error';
       console.log(`oops!${error}`);
     });
   });
 };
 run(watchedState, mystate, elements);
-
-// form.addEventListener('submit', (e) => {
-//   const currentValue = e.target.querySelector('input').value;
-//   e.preventDefault();
-//   watchedState.valuefrominput = formElement.value;
-
-//   if (watchedState.valuefrominput === '') {
-//     document.getElementById('output').innerHTML = i18next.t('empty');
-//     return;
-//   }
-// const validDataInput = schema.validate({ name: watchedState.valuefrominput }, { strict: true });
-
-//   validDataInput.then(() => {
-//     if (!watchedState.arrayUrl.includes(watchedState.valuefrominput)) {
-//       watchedState.arrayUrl.push(watchedState.valuefrominput);
-//       parseData(currentValue);
-//       document.getElementById('url-input').style.border = 'none';
-//     } else {
-//       document.getElementById('url-input').style.border = '4px solid red';
-//       document.getElementById('output').innerHTML = i18next.t('double');
-//     }
-//   }, (error) => {
-//     document.getElementById('url-input').style.border = '4px solid red';
-//     document.getElementById('output').innerHTML = i18next.t('valid');
-//     console.log(`oops!${error}`);
-//   });
-// });
 
 document.querySelector('.posts-list').addEventListener('click', (e) => {
   const item1 = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));

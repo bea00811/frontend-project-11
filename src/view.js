@@ -32,13 +32,6 @@ export const renderPostsFirstly = (state, viewMessage, i18next) => {
 };
 
 export const renderFeedFyrstly = (state) => {
-  const { title, description, posts } = state;
-  console.log(state);
-  console.log(title);
-  console.log(description);
-  console.log(posts);
-  console.log('renderfeedfirstly');
-
   const newList1 = document.createElement('ul');
   newList1.className = 'newlist';
 
@@ -58,13 +51,6 @@ export const renderFeedFyrstly = (state) => {
 };
 
 export const renderModal = (item) => {
-  console.log(item);
-  console.log(item.name);
-  console.log(item.isReaded);
-
-  console.log('renderModal');
-  // condocument.getElementById('modal-container')
-
   const description = document.querySelector('.modal-body');
   const title = document.getElementById('exampleModalLabel');
 
@@ -83,15 +69,23 @@ export const renderModal = (item) => {
   linkContainer.replaceChildren(...linkPodContainer.children);
 
   linkContainer.appendChild = link;
-  console.log(link);
-  console.log('link');
-
-  // const line = document.querySelector()
 
   if (item.isReaded === true) {
     link.classList.add('red');
   } else {
     link.classList.add('fw-normal');
   }
-  // read.append(link);
+};
+
+export const blockUi = (selectors) => {
+  const elements = selectors;
+  elements.btn.disabled = true;
+  elements.btn.classList.add('active-i-am');
+  elements.input.setAttribute('readonly', 'true');
+};
+
+export const unBlockUi = (selectors) => {
+  const elements = selectors;
+  elements.btn.disabled = false;
+  elements.input.removeAttribute('readonly');
 };
