@@ -8,6 +8,13 @@ import axios from 'axios';
 import getPosts from './controllers.js';
 import { renderFeedFyrstly, renderPostsFirstly, renderModal } from './view.js';
 
+const elements = {
+  form: document.getElementById('rss-form'),
+  formElement: document.getElementById('url-input'),
+  input: document.getElementById('url-input'),
+  output: document.getElementById('output'),
+};
+
 const formElement = document.getElementById('url-input');
 const form = document.getElementById('rss-form');
 
@@ -30,7 +37,11 @@ i18next.init({
 });
 
 const mystate = {
-  repeat: null,
+  formProcess: {
+    errors: [],
+    state: 'filling',
+    valid: '',
+  },
   feeds: [],
   valuefrominput: ' ',
   arrayUrl: [],
@@ -124,41 +135,65 @@ const parseData = (urlAddress) => {
   checkRss(urlAddress);
 };
 
-form.addEventListener('submit', (e) => {
-  console.log(e.target.querySelector('input').value);
-  const currentValue = e.target.querySelector('input').value;
-  console.log('e.target.value');
-  e.preventDefault();
-  watchedState.valuefrominput = formElement.value;
-
-  if (watchedState.valuefrominput === '') {
-    document.getElementById('output').innerHTML = i18next.t('empty');
-    return;
-  }
-  const validDataInput = schema.validate({ name: watchedState.valuefrominput }, { strict: true });
-
-  validDataInput.then(() => {
-    if (!watchedState.arrayUrl.includes(watchedState.valuefrominput)) {
-      watchedState.arrayUrl.push(watchedState.valuefrominput);
-      parseData(currentValue);
-      document.getElementById('url-input').style.border = 'none';
-    } else {
-      document.getElementById('url-input').style.border = '4px solid red';
-      document.getElementById('output').innerHTML = i18next.t('double');
+const run = (watchedState1, mystate1, elements1) => {
+  elements.form.addEventListener('submit', (e) => {
+    const currentValue = e.target.querySelector('input').value;
+    e.preventDefault();
+    watchedState.valuefrominput = elements.formElement.value;
+    if (watchedState.valuefrominput === '') {
+      elements.output.innerHTML = i18next.t('empty');
+      mystate.formProcess.state = 'error';
     }
-  }, (error) => {
-    document.getElementById('url-input').style.border = '4px solid red';
-    document.getElementById('output').innerHTML = i18next.t('valid');
-    console.log(`oops!${error}`);
+    const validDataInput = schema.validate({ name: watchedState.valuefrominput }, { strict: true });
+
+    validDataInput.then(() => {
+      if (!watchedState.arrayUrl.includes(watchedState.valuefrominput)) {
+        watchedState.arrayUrl.push(watchedState.valuefrominput);
+        parseData(currentValue);
+        elements.input.style.border = 'none';
+      } else {
+        elements.input.style.border = '4px solid red';
+        elements.output.innerHTML = i18next.t('double');
+      }
+    }, (error) => {
+      elements.input.style.border = '4px solid red';
+      elements.output.innerHTML = i18next.t('valid');
+      console.log(`oops!${error}`);
+    });
   });
-});
+};
+run(watchedState, mystate, elements);
+
+// form.addEventListener('submit', (e) => {
+//   const currentValue = e.target.querySelector('input').value;
+//   e.preventDefault();
+//   watchedState.valuefrominput = formElement.value;
+
+//   if (watchedState.valuefrominput === '') {
+//     document.getElementById('output').innerHTML = i18next.t('empty');
+//     return;
+//   }
+//   const validDataInput = schema.validate({ name: watchedState.valuefrominput }, { strict: true });
+
+//   validDataInput.then(() => {
+//     if (!watchedState.arrayUrl.includes(watchedState.valuefrominput)) {
+//       watchedState.arrayUrl.push(watchedState.valuefrominput);
+//       parseData(currentValue);
+//       document.getElementById('url-input').style.border = 'none';
+//     } else {
+//       document.getElementById('url-input').style.border = '4px solid red';
+//       document.getElementById('output').innerHTML = i18next.t('double');
+//     }
+//   }, (error) => {
+//     document.getElementById('url-input').style.border = '4px solid red';
+//     document.getElementById('output').innerHTML = i18next.t('valid');
+//     console.log(`oops!${error}`);
+//   });
+// });
 
 document.querySelector('.posts-list').addEventListener('click', (e) => {
-  console.log(e.target.getAttribute('data-id'));
   const item1 = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));
   item1.isReaded = true;
   e.target.parentNode.querySelector('a').className = 'fw-normal';
-  console.log(e.target.parentNode.querySelector('a'));
-  console.log('itemparentNode');
   renderModal(item1);
 });
