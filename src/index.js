@@ -130,12 +130,12 @@ const schema = yup.object({
 });
 
 // Hexlet All origins
-const parseData = (urlAddress, elements) => {
-  getData(urlAddress, elements);
+const parseData = (urlAddress, elements1) => {
+  getData(urlAddress, elements1);
 
-  const checkRss = (url, elements) => {
+  const checkRss = (url, elements2) => {
     setTimeout(() => {
-      getData(url, elements);
+      getData(url, elements2);
       checkRss(url);
     }, 5000);
   };
