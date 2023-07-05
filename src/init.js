@@ -15,7 +15,7 @@ export const elements = {
   formElement: document.getElementById('url-input'),
   input: document.getElementById('url-input'),
   output: document.getElementById('output'),
-  btn: document.querySelector('btn'),
+  btn: document.querySelector('.btn'),
 };
 
 i18next.init({
@@ -68,7 +68,7 @@ export const watchedState = onChange(mystate, (path, value, previousValue) => {
       renderFeedFyrstly(mystate.feed);
       break;
     case 'formProcess.state':
-      if (value === 'filling') {
+      if (value === 'sending') {
         blockUi(elements);
       } else if (value === 'error') {
         unBlockUi(elements);
@@ -101,6 +101,7 @@ const getData = (urlAddress, selectors) => {
         watchedState.feed.description.push(description);
 
         elementsGetData.output.innerHTML = i18next.t('success');
+        watchedState.formProcess.state = 'finished';
         elementsGetData.formElement.value = '';
       } else {
         const firstData = getPosts(data);
@@ -143,9 +144,8 @@ const parseData = (urlAddress, elements1) => {
   checkRss(urlAddress, elements);
 };
 
-export const run = (watchedState1, myState1, elements1) => {
+export const run = (watchedState1, elements1) => {
   const watchedStateRun = watchedState1;
-  const mystateRun = myState1;
   const elementsRun = elements1;
   elements.form.addEventListener('submit', (e) => {
     const currentValue = e.target.querySelector('input').value;
@@ -153,7 +153,7 @@ export const run = (watchedState1, myState1, elements1) => {
     watchedStateRun.valuefrominput = elementsRun.formElement.value;
     if (watchedStateRun.valuefrominput === '') {
       elementsRun.output.innerHTML = i18next.t('empty');
-      mystateRun.formProcess.state = 'error';
+      watchedStateRun.formProcess.state = 'error';
       console.log(mystate.formProcess);
       console.log('mystate.formProcess');
     }
@@ -162,30 +162,29 @@ export const run = (watchedState1, myState1, elements1) => {
     validDataInput.then(() => {
       if (!watchedStateRun.arrayUrl.includes(watchedStateRun.valuefrominput)) {
         watchedStateRun.arrayUrl.push(watchedStateRun.valuefrominput);
+        watchedStateRun.formProcess.state = 'sending';
         parseData(currentValue, elements);
         elementsRun.input.style.border = 'none';
-        mystateRun.formProcess.state = 'finished';
         console.log(mystate.formProcess);
         console.log('mystate.formProcess');
       } else {
         elementsRun.input.style.border = '4px solid red';
         elementsRun.output.innerHTML = i18next.t('double');
-        mystateRun.formProcess.state = 'error';
+        watchedStateRun.formProcess.state = 'error';
         console.log(mystate.formProcess);
         console.log('mystate.formProcess');
       }
     }, (error) => {
       elementsRun.input.style.border = '4px solid red';
       elementsRun.output.innerHTML = i18next.t('valid');
-      mystateRun.formProcess.state = 'error';
+      watchedStateRun.formProcess.state = 'error';
       console.log(mystate.formProcess);
       console.log('mystate.formProcess');
       console.log(`oops!${error}`);
     });
   });
 };
-// run(watchedState, mystate, elements);
-// export default run;
+
 document.querySelector('.posts-list').addEventListener('click', (e) => {
   const item1 = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));
   item1.isReaded = true;

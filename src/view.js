@@ -78,6 +78,8 @@ export const renderModal = (item) => {
 };
 
 export const blockUi = (selectors) => {
+  console.log(selectors);
+  console.log('selectors blockUi');
   const elements = selectors;
   elements.btn.disabled = true;
   elements.btn.classList.add('active-i-am');
@@ -85,6 +87,8 @@ export const blockUi = (selectors) => {
 };
 
 export const unBlockUi = (selectors) => {
+  console.log(selectors);
+  console.log('selectors unblockUi');
   const elements = selectors;
   elements.btn.disabled = false;
   elements.input.removeAttribute('readonly');
