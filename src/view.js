@@ -68,9 +68,9 @@ export const renderModal = (item) => {
   linkContainer.appendChild = link;
 
   if (item.isReaded === true) {
-    link.classList.add('red');
-  } else {
     link.classList.add('fw-normal');
+  } else {
+    link.classList.add('fw-bold');
   }
 };
 

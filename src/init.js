@@ -22,10 +22,9 @@ export const elements = {
   output: document.getElementById('output'),
   btn: document.querySelector('.btn'),
 };
+const i18nextInstance = i18next.createInstance();
 
-// const i18nextInstance = i18next.createInstance();
-
-i18next.init({
+i18nextInstance.init({
   lng: 'ru', // if you're using a language detector, do not define the lng option
   debug: true,
   resources: {
@@ -51,7 +50,7 @@ export const mystate = {
     valid: '',
   },
   feeds: [],
-  valuefrominput: ' ',
+  valueFromInput: ' ',
   arrayUrl: [],
   feed: {
     title: [],
@@ -66,7 +65,7 @@ export const watchedState = onChange(mystate, (path, value, previousValue) => {
   console.log(previousValue);
   switch (path) {
     case 'feed.posts':
-      renderPostsFirstly(mystate.feed, 'viewMessage', i18next);
+      renderPostsFirstly(mystate.feed, 'viewMessage', i18nextInstance);
       renderFeedFyrstly(mystate.feed);
       break;
     case 'feed.title':
@@ -80,7 +79,7 @@ export const watchedState = onChange(mystate, (path, value, previousValue) => {
         blockUi(elements);
       } else if (value === 'error') {
         unBlockUi(elements);
-        showError(watchedState.formProcess.error, elements, i18next);
+        showError(watchedState.formProcess.error, elements, i18nextInstance);
       } else if (value === 'finished') {
         unBlockUi(elements);
       }
@@ -109,7 +108,7 @@ const getData = (urlAddress, selectors) => {
         watchedState.feed.title.push(title);
         watchedState.feed.description.push(description);
 
-        elementsGetData.output.innerHTML = i18next.t('success');
+        elementsGetData.output.innerHTML = i18nextInstance.t('success');
         watchedState.formProcess.state = 'finished';
         elementsGetData.formElement.value = '';
       } else {
@@ -150,37 +149,35 @@ const parseData = (urlAddress, elements1) => {
   checkRss(urlAddress, elements);
 };
 
-export const run = (watchedState1, elements1) => {
-  const watchedStateRun = watchedState1;
-  const elementsRun = elements1;
+export const run = () => {
   elements.form.addEventListener('submit', (e) => {
     const currentValue = e.target.querySelector('input').value;
     e.preventDefault();
-    watchedStateRun.valuefrominput = elementsRun.formElement.value;
-    const validDataInput = schema.validate({ name: watchedState.valuefrominput }, { strict: true });
+    watchedState.valueFromInput = elements.formElement.value;
+    const validDataInput = schema.validate({ name: watchedState.valueFromInput }, { strict: true });
 
     validDataInput.then(() => {
-      if (!watchedStateRun.arrayUrl.includes(watchedStateRun.valuefrominput)) {
-        watchedStateRun.arrayUrl.push(watchedStateRun.valuefrominput);
-        watchedStateRun.formProcess.state = 'sending';
+      if (!watchedState.arrayUrl.includes(watchedState.valueFromInput)) {
+        watchedState.arrayUrl.push(watchedState.valueFromInput);
+        watchedState.formProcess.state = 'sending';
         parseData(currentValue, elements);
-        elementsRun.input.style.border = 'none';
+        elements.input.style.border = 'none';
       } else {
-        elementsRun.input.style.border = '4px solid red';
-        elementsRun.output.innerHTML = i18next.t('double');
-        // watchedStateRun.formProcess.state = 'error';
+        elements.input.style.border = '4px solid red';
+        elements.output.innerHTML = i18nextInstance.t('double');
+        // watchedState.formProcess.state = 'error';
       }
     }, (error) => {
-      elementsRun.input.style.border = '4px solid red';
+      elements.input.style.border = '4px solid red';
       watchedState.formProcess.error = error.message;
-      watchedStateRun.formProcess.state = 'error';
+      watchedState.formProcess.state = 'error';
     });
   });
 };
 
 document.querySelector('.posts-list').addEventListener('click', (e) => {
-  const item1 = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));
-  item1.isReaded = true;
-  e.target.parentNode.querySelector('a').className = 'fw-normal';
-  renderModal(item1);
+  const element = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));
+  element.isReaded = true;
+  // e.target.parentNode.querySelector('a').className = 'fw-normal';
+  renderModal(element);
 });

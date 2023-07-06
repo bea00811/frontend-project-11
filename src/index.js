@@ -1,3 +1,3 @@
-import { run, watchedState, elements } from './init.js';
+import { run } from './init.js';
 
-run(watchedState, elements);
+run();
