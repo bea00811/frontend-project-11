@@ -27,7 +27,7 @@ const getPosts = (data) => {
     const result = { title, description, posts };
     return result;
   }
-  throw new Error('OOps!!:)) Network response was parcerror. This msg is from appPosts func');
+  throw new Error('badurl');
 };
 
 export default getPosts;

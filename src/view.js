@@ -1,7 +1,4 @@
 export const renderPostsFirstly = (state, viewMessage, i18next) => {
-  // console.log(state);
-  // console.log('this is state');
-
   const newList = document.createElement('ul');
   newList.className = 'newlist';
   for (let i = 0; i < state.posts.length; i += 1) {
@@ -92,4 +89,14 @@ export const unBlockUi = (selectors) => {
   const elements = selectors;
   elements.btn.disabled = false;
   elements.input.removeAttribute('readonly');
+};
+
+export const showError = (error, selectors, i18next) => {
+  console.log(selectors.output);
+  console.log('selectors output');
+  const newError = error;
+  console.log(newError);
+  console.log('i18next.t(error) from showError');
+  const elements = selectors;
+  elements.output.innerHTML = i18next.t(error);
 };

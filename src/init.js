@@ -7,7 +7,12 @@ import i18next from 'i18next';
 import axios from 'axios';
 import getPosts from './controllers.js';
 import {
-  renderFeedFyrstly, renderPostsFirstly, renderModal, blockUi, unBlockUi,
+  renderFeedFyrstly,
+  renderPostsFirstly,
+  renderModal,
+  blockUi,
+  unBlockUi,
+  showError,
 } from './view.js';
 
 export const elements = {
@@ -18,6 +23,8 @@ export const elements = {
   btn: document.querySelector('.btn'),
 };
 
+// const i18nextInstance = i18next.createInstance();
+
 i18next.init({
   lng: 'ru', // if you're using a language detector, do not define the lng option
   debug: true,
@@ -25,9 +32,9 @@ i18next.init({
     ru: {
       translation: {
         double: 'RSS уже существует',
-        valid: 'Ссылка должна быть валидным URL',
+        'name must be a valid URL': 'Ссылка должна быть валидным URL',
         badurl: 'Ресурс не содержит валидный RSS',
-        mistake: 'Ошибка сети',
+        'Network Error': 'Ошибка сети',
         success: 'RSS успешно загружен',
         empty: 'Не должно быть пустым',
         viewMessage: 'Просмотр',
@@ -37,8 +44,9 @@ i18next.init({
 });
 
 export const mystate = {
+  error: '',
   formProcess: {
-    errors: [],
+    error: '',
     state: 'filling',
     valid: '',
   },
@@ -72,6 +80,7 @@ export const watchedState = onChange(mystate, (path, value, previousValue) => {
         blockUi(elements);
       } else if (value === 'error') {
         unBlockUi(elements);
+        showError(watchedState.formProcess.error, elements, i18next);
       } else if (value === 'finished') {
         unBlockUi(elements);
       }
@@ -117,12 +126,9 @@ const getData = (urlAddress, selectors) => {
         watchedState.feed.description = resultDescriptions;
       }
     })
-    .catch(() => {
-      if (!mystate.feeds.includes(urlAddress)) {
-        document.getElementById('output').innerHTML = i18next.t('mistake');
-      } else {
-        document.getElementById('output').innerHTML = i18next.t('badurl');
-      }
+    .catch((error) => {
+      watchedState.formProcess.error = error.message;
+      watchedState.formProcess.state = 'error';
     });
 };
 
@@ -137,7 +143,7 @@ const parseData = (urlAddress, elements1) => {
   const checkRss = (url, elements2) => {
     setTimeout(() => {
       getData(url, elements2);
-      checkRss(url);
+      checkRss(url, elements2);
     }, 5000);
   };
 
@@ -151,12 +157,6 @@ export const run = (watchedState1, elements1) => {
     const currentValue = e.target.querySelector('input').value;
     e.preventDefault();
     watchedStateRun.valuefrominput = elementsRun.formElement.value;
-    if (watchedStateRun.valuefrominput === '') {
-      elementsRun.output.innerHTML = i18next.t('empty');
-      watchedStateRun.formProcess.state = 'error';
-      console.log(mystate.formProcess);
-      console.log('mystate.formProcess');
-    }
     const validDataInput = schema.validate({ name: watchedState.valuefrominput }, { strict: true });
 
     validDataInput.then(() => {
@@ -165,22 +165,15 @@ export const run = (watchedState1, elements1) => {
         watchedStateRun.formProcess.state = 'sending';
         parseData(currentValue, elements);
         elementsRun.input.style.border = 'none';
-        console.log(mystate.formProcess);
-        console.log('mystate.formProcess');
       } else {
         elementsRun.input.style.border = '4px solid red';
         elementsRun.output.innerHTML = i18next.t('double');
-        watchedStateRun.formProcess.state = 'error';
-        console.log(mystate.formProcess);
-        console.log('mystate.formProcess');
+        // watchedStateRun.formProcess.state = 'error';
       }
     }, (error) => {
       elementsRun.input.style.border = '4px solid red';
-      elementsRun.output.innerHTML = i18next.t('valid');
+      watchedState.formProcess.error = error.message;
       watchedStateRun.formProcess.state = 'error';
-      console.log(mystate.formProcess);
-      console.log('mystate.formProcess');
-      console.log(`oops!${error}`);
     });
   });
 };
