@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import onChange from 'on-change';
-import './styles.scss';
 import 'bootstrap';
 import * as yup from 'yup';
 import i18next from 'i18next';
@@ -61,10 +60,7 @@ const run = () => {
     },
   });
 
-  const watchedState = onChange(mystate, (path, value, previousValue) => {
-    console.log(path);
-    console.log(value);
-    console.log(previousValue);
+  const watchedState = onChange(mystate, (path, value) => {
     switch (path) {
       case 'feed.posts':
         renderPostsFirstly(mystate.feed, 'viewMessage', i18nextInstance);
@@ -87,7 +83,7 @@ const run = () => {
         }
         break;
       default:
-        console.log('nothing changed');
+        break;
     }
   });
 
@@ -163,14 +159,11 @@ const run = () => {
         watchedState.arrayUrl.push(watchedState.valueFromInput);
         watchedState.formProcess.state = 'sending';
         parseData(currentValue, elements);
-        elements.input.style.border = 'none';
       } else {
-        elements.input.style.border = '4px solid red';
-        elements.output.innerHTML = i18nextInstance.t('double');
-        // watchedState.formProcess.state = 'error';
+        watchedState.formProcess.error = 'double';
+        watchedState.formProcess.state = 'error';
       }
     }, (error) => {
-      elements.input.style.border = '4px solid red';
       watchedState.formProcess.error = error.message;
       watchedState.formProcess.state = 'error';
     });
