@@ -21,6 +21,7 @@ export default () => {
     input: document.getElementById('url-input'),
     output: document.getElementById('output'),
     btn: document.querySelector('.btn'),
+    postsList: document.querySelector('.posts-list'),
   };
 
   const mystate = {
@@ -35,10 +36,7 @@ export default () => {
     valueFromInput: ' ',
     arrayUrl: [],
     feed: {
-      feedName: {
-        title: [],
-        description: [],
-      },
+      feedName: {},
       posts: [],
     },
   };
@@ -67,7 +65,7 @@ export default () => {
       case 'feed.posts':
         renderPostsFirstly(mystate.feed, 'viewMessage', i18nextInstance);
         break;
-      case 'feed.feedName.description':
+      case 'feed.feedName':
         renderFeedFyrstly(mystate.feed.feedName);
         break;
       case 'modal':
@@ -89,9 +87,6 @@ export default () => {
     }
   });
 
-  // const descriptions = [];
-  // const titles = [];
-
   const getData = (urlAddress, selectors) => {
     const elementsGetData = selectors;
     axios
@@ -106,9 +101,10 @@ export default () => {
           const firstData = getPosts(data);
           const { title, description, posts } = firstData;
           watchedState.feed.posts = posts;
-
-          watchedState.feed.feedName.title = title;
-          watchedState.feed.feedName.description = description;
+          watchedState.feed.feedName = {
+            title,
+            description,
+          };
 
           elementsGetData.output.innerHTML = i18nextInstance.t('success');
           watchedState.formProcess.state = 'finished';
@@ -166,10 +162,9 @@ export default () => {
     });
   });
 
-  document.querySelector('.posts-list').addEventListener('click', (e) => {
+  elements.postsList.addEventListener('click', (e) => {
     const element = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));
     element.isReaded = true;
     watchedState.modal = element;
-    // renderModal(element);
   });
 };
