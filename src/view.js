@@ -3,7 +3,7 @@ export const renderPostsFirstly = (state, viewMessage, i18next) => {
   for (let i = 0; i < state.posts.length; i += 1) {
     const myListEl = document.createElement('li');
     const myLink = document.createElement('a');
-    myLink.innerHTML = state.posts[i].name;
+    myLink.textContent = state.posts[i].name;
     myLink.setAttribute('href', state.posts[i].link);
     myLink.setAttribute('target', '_blank');
     if (state.posts[i].isReaded === false) {
@@ -18,8 +18,7 @@ export const renderPostsFirstly = (state, viewMessage, i18next) => {
     button.classList.add('btn', 'btn-primary');
     button.setAttribute('data-bs-target', '#exampleModal');
     button.setAttribute('data-id', state.posts[i].id);
-    myListEl.append(myLink);
-    myListEl.append(button);
+    myListEl.append(myLink, button);
     newList.append(myListEl);
   }
 
@@ -29,16 +28,14 @@ export const renderPostsFirstly = (state, viewMessage, i18next) => {
 
 export const renderFeedFyrstly = (state) => {
   const newList1 = document.createElement('ul');
-  newList1.className = 'newlist';
-
   for (let i = state.title.length - 1; i >= 0; i -= 1) {
     const listItem = document.createElement('li');
-    const title1 = document.createElement('h4');
-    const description1 = document.createElement('p');
-    title1.innerHTML = state.title[i];
-    description1.innerHTML = state.description[i];
-    listItem.appendChild(title1);
-    listItem.appendChild(description1);
+    const title = document.createElement('h4');
+    const description = document.createElement('p');
+    title.innerHTML = state.title[i];
+    description.innerHTML = state.description[i];
+    listItem.appendChild(title);
+    listItem.appendChild(description);
     newList1.append(listItem);
   }
 

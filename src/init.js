@@ -34,8 +34,10 @@ export default () => {
     valueFromInput: ' ',
     arrayUrl: [],
     feed: {
-      title: [],
-      description: [],
+      feedName: {
+        title: [],
+        description: [],
+      },
       posts: [],
     },
   };
@@ -64,12 +66,12 @@ export default () => {
       case 'feed.posts':
         renderPostsFirstly(mystate.feed, 'viewMessage', i18nextInstance);
         break;
-      case 'feed.title':
-        renderFeedFyrstly(mystate.feed);
+      case 'feed.feedName.description':
+        renderFeedFyrstly(mystate.feed.feedName);
         break;
-      case 'feed.description':
-        renderFeedFyrstly(mystate.feed);
-        break;
+      // case 'feed.description':
+      //   renderFeedFyrstly(mystate.feed);
+      //   break;
       case 'formProcess.state':
         if (value === 'sending') {
           blockUi(elements);
@@ -102,8 +104,8 @@ export default () => {
           const firstData = getPosts(data);
           const { title, description, posts } = firstData;
           watchedState.feed.posts = posts;
-          watchedState.feed.title.push(title);
-          watchedState.feed.description.push(description);
+          watchedState.feed.feedName.title.push(title);
+          watchedState.feed.feedName.description.push(description);
 
           elementsGetData.output.innerHTML = i18nextInstance.t('success');
           watchedState.formProcess.state = 'finished';
@@ -113,13 +115,13 @@ export default () => {
           const { title, description, posts } = firstData;
           const PrevAndUpdatedPosts = [...previousPosts, ...posts];
           const resultPosts = _.uniqBy(PrevAndUpdatedPosts, 'name');
-          titles.push(title);
-          descriptions.push(description);
-          const resultTitles = _.uniq(titles);
-          const resultDescriptions = _.uniq(descriptions);
+          // titles.push(title);
+          // descriptions.push(description);
+          // const resultTitles = _.uniq(titles);
+          // const resultDescriptions = _.uniq(descriptions);
           watchedState.feed.posts = resultPosts;
-          watchedState.feed.title = resultTitles;
-          watchedState.feed.description = resultDescriptions;
+          // watchedState.feed.feedName.title = resultTitles;
+          // watchedState.feed.feedName.description = resultDescriptions;
         }
       })
       .catch((error) => {
