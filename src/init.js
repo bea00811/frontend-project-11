@@ -87,8 +87,8 @@ export default () => {
     }
   });
 
-  const descriptions = [];
-  const titles = [];
+  // const descriptions = [];
+  // const titles = [];
 
   const getData = (urlAddress, selectors) => {
     const elementsGetData = selectors;
@@ -112,7 +112,8 @@ export default () => {
           elementsGetData.formElement.value = '';
         } else {
           const firstData = getPosts(data);
-          const { title, description, posts } = firstData;
+          const { posts } = firstData;
+          // const { title, description, posts } = firstData;
           const PrevAndUpdatedPosts = [...previousPosts, ...posts];
           const resultPosts = _.uniqBy(PrevAndUpdatedPosts, 'name');
           // titles.push(title);
