@@ -30,6 +30,7 @@ export default () => {
       state: 'filling',
       valid: '',
     },
+    modal: '',
     feeds: [],
     valueFromInput: ' ',
     arrayUrl: [],
@@ -69,6 +70,10 @@ export default () => {
       case 'feed.feedName.description':
         renderFeedFyrstly(mystate.feed.feedName);
         break;
+      case 'modal':
+        renderModal(mystate.modal);
+        break;
+
       case 'formProcess.state':
         if (value === 'sending') {
           blockUi(elements);
@@ -101,9 +106,6 @@ export default () => {
           const firstData = getPosts(data);
           const { title, description, posts } = firstData;
           watchedState.feed.posts = posts;
-          console.log(title);
-          console.log(description);
-          console.log('description');
 
           watchedState.feed.feedName.title = title;
           watchedState.feed.feedName.description = description;
@@ -167,6 +169,7 @@ export default () => {
   document.querySelector('.posts-list').addEventListener('click', (e) => {
     const element = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));
     element.isReaded = true;
-    renderModal(element);
+    watchedState.modal = element;
+    // renderModal(element);
   });
 };
