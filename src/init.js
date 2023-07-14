@@ -14,7 +14,7 @@ import {
   showError,
 } from './view.js';
 
-const run = () => {
+export default () => {
   const elements = {
     form: document.getElementById('rss-form'),
     formElement: document.getElementById('url-input'),
@@ -50,10 +50,9 @@ const run = () => {
         translation: {
           double: 'RSS уже существует',
           'name must be a valid URL': 'Ссылка должна быть валидным URL',
-          badurl: 'Ресурс не содержит валидный RSS',
+          badUrl: 'Ресурс не содержит валидный RSS',
           'Network Error': 'Ошибка сети',
           success: 'RSS успешно загружен',
-          empty: 'Не должно быть пустым',
           viewMessage: 'Просмотр',
         },
       },
@@ -64,7 +63,6 @@ const run = () => {
     switch (path) {
       case 'feed.posts':
         renderPostsFirstly(mystate.feed, 'viewMessage', i18nextInstance);
-        renderFeedFyrstly(mystate.feed);
         break;
       case 'feed.title':
         renderFeedFyrstly(mystate.feed);
@@ -176,4 +174,4 @@ const run = () => {
   });
 };
 
-export default run;
+// export default run;

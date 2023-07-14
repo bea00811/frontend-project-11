@@ -27,7 +27,7 @@ const getPosts = (data) => {
     const result = { title, description, posts };
     return result;
   }
-  throw new Error('badurl');
+  throw new Error('badUrl');
 };
 
 export default getPosts;

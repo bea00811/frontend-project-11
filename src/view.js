@@ -1,6 +1,5 @@
 export const renderPostsFirstly = (state, viewMessage, i18next) => {
   const newList = document.createElement('ul');
-  newList.className = 'newlist';
   for (let i = 0; i < state.posts.length; i += 1) {
     const myListEl = document.createElement('li');
     const myLink = document.createElement('a');
