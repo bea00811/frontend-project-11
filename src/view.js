@@ -27,20 +27,32 @@ export const renderPostsFirstly = (state, viewMessage, i18next) => {
 };
 
 export const renderFeedFyrstly = (state) => {
-  const newList1 = document.createElement('ul');
-  for (let i = state.title.length - 1; i >= 0; i -= 1) {
-    const listItem = document.createElement('li');
-    const title = document.createElement('h4');
-    const description = document.createElement('p');
-    title.innerHTML = state.title[i];
-    description.innerHTML = state.description[i];
-    listItem.appendChild(title);
-    listItem.appendChild(description);
-    newList1.append(listItem);
-  }
+  console.log(state.title);
+  console.log(state.description);
+  const newList1 = document.querySelector('.feeds-list');
+  // for (let i = state.title.length - 1; i >= 0; i -= 1) {
+  //   const listItem = document.createElement('li');
+  //   const title = document.createElement('h4');
+  //   const description = document.createElement('p');
+  //   title.innerHTML = state.title[i];
+  //   description.innerHTML = state.description[i];
+  //   listItem.appendChild(title);
+  //   listItem.appendChild(description);
+  //   newList1.append(listItem);
+  // }
 
-  const oldList1 = document.querySelector('.feeds-list');
-  oldList1.replaceChildren(...newList1.children);
+  const listItem = document.createElement('li');
+  const title = document.createElement('h4');
+  const description = document.createElement('p');
+  title.innerHTML = state.title;
+  description.innerHTML = state.description;
+  listItem.appendChild(title);
+  listItem.appendChild(description);
+  newList1.append(listItem);
+  console.log(newList1);
+
+  // const oldList1 = document.querySelector('.feeds-list');
+  // oldList1.replaceChildren(...newList1.children);
 };
 
 export const renderModal = (item) => {

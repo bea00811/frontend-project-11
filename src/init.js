@@ -69,9 +69,6 @@ export default () => {
       case 'feed.feedName.description':
         renderFeedFyrstly(mystate.feed.feedName);
         break;
-      // case 'feed.description':
-      //   renderFeedFyrstly(mystate.feed);
-      //   break;
       case 'formProcess.state':
         if (value === 'sending') {
           blockUi(elements);
@@ -104,8 +101,12 @@ export default () => {
           const firstData = getPosts(data);
           const { title, description, posts } = firstData;
           watchedState.feed.posts = posts;
-          watchedState.feed.feedName.title.push(title);
-          watchedState.feed.feedName.description.push(description);
+          console.log(title);
+          console.log(description);
+          console.log('description');
+
+          watchedState.feed.feedName.title = title;
+          watchedState.feed.feedName.description = description;
 
           elementsGetData.output.innerHTML = i18nextInstance.t('success');
           watchedState.formProcess.state = 'finished';
@@ -113,16 +114,9 @@ export default () => {
         } else {
           const firstData = getPosts(data);
           const { posts } = firstData;
-          // const { title, description, posts } = firstData;
           const PrevAndUpdatedPosts = [...previousPosts, ...posts];
           const resultPosts = _.uniqBy(PrevAndUpdatedPosts, 'name');
-          // titles.push(title);
-          // descriptions.push(description);
-          // const resultTitles = _.uniq(titles);
-          // const resultDescriptions = _.uniq(descriptions);
           watchedState.feed.posts = resultPosts;
-          // watchedState.feed.feedName.title = resultTitles;
-          // watchedState.feed.feedName.description = resultDescriptions;
         }
       })
       .catch((error) => {
@@ -176,5 +170,3 @@ export default () => {
     renderModal(element);
   });
 };
-
-// export default run;
