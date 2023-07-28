@@ -22,6 +22,11 @@ export default () => {
     output: document.getElementById('output'),
     btn: document.querySelector('.btn'),
     postsList: document.querySelector('.posts-list'),
+    description: document.querySelector('.modal-body'),
+    title: document.getElementById('exampleModalLabel'),
+    linkContainer: document.querySelector('.link-container'),
+    linkPodContainer: document.createElement('div'),
+    link: document.querySelector('.link-container a'),
   };
 
   const mystate = {
@@ -69,7 +74,7 @@ export default () => {
         renderFeedFyrstly(mystate.feed.feedName);
         break;
       case 'modal':
-        renderModal(mystate.modal);
+        renderModal(mystate.modal, elements);
         break;
 
       case 'formProcess.state':
@@ -137,13 +142,14 @@ export default () => {
     checkRss(urlAddress, elements);
   };
 
-  const schema = yup.object({
-    name: yup.string().url().nullable(),
-  });
-
   elements.form.addEventListener('submit', (e) => {
     const currentValue = e.target.querySelector('input').value;
     e.preventDefault();
+
+    const schema = yup.object({
+      name: yup.string().url().nullable(),
+    });
+
     watchedState.valueFromInput = elements.formElement.value;
     const validDataInput = schema.validate({ name: watchedState.valueFromInput }, { strict: true });
 

@@ -27,50 +27,32 @@ export const renderPostsFirstly = (state, viewMessage, i18next) => {
 };
 
 export const renderFeedFyrstly = (state) => {
-  console.log(state.title);
-  console.log(state.description);
-  const newList1 = document.querySelector('.feeds-list');
+  const newList = document.querySelector('.feeds-list');
   const listItem = document.createElement('li');
   const title = document.createElement('h4');
   const description = document.createElement('p');
-  title.innerHTML = state.title;
-  description.innerHTML = state.description;
-  listItem.appendChild(title);
-  listItem.appendChild(description);
-  newList1.append(listItem);
+  title.textContent = state.title;
+  description.textContent = state.description;
+  listItem.appendChild(title, description);
+  newList.append(listItem);
 };
 
-export const renderModal = (item) => {
-  const description = document.querySelector('.modal-body');
-  const title = document.getElementById('exampleModalLabel');
-
-  title.innerHTML = item.name;
-  description.innerHTML = item.postDescription;
-
-  const linkContainer = document.querySelector('.link-container');
-  const linkPodContainer = document.createElement('div');
-  const link = document.createElement('a');
-
-  link.innerHTML = 'Читать полностью';
-  link.setAttribute('href', item.link);
-  link.setAttribute('target', '_blank');
-  link.classList.add('btn', 'btn-primary', 'full-article');
-  linkPodContainer.appendChild(link);
-  linkContainer.replaceChildren(...linkPodContainer.children);
-
-  linkContainer.appendChild = link;
+export const renderModal = (item, selectors) => {
+  const elements = selectors;
+  elements.title.textContent = item.name;
+  elements.description.textContent = item.postDescription;
+  elements.link.setAttribute('href', item.link);
 
   if (item.isReaded === true) {
-    link.classList.add('fw-normal');
+    elements.link.classList.add('fw-normal');
   } else {
-    link.classList.add('fw-bold');
+    elements.link.classList.add('fw-bold');
   }
 };
 
 export const blockUi = (selectors) => {
   const elements = selectors;
   elements.btn.disabled = true;
-  elements.btn.classList.add('active-i-am');
   elements.input.setAttribute('readonly', 'true');
 };
 
@@ -79,10 +61,11 @@ export const unBlockUi = (selectors) => {
   elements.btn.disabled = false;
   elements.input.removeAttribute('readonly');
   elements.input.style.border = 'none';
+  elements.input.focus();
 };
 
 export const showError = (error, selectors, i18next) => {
   const elements = selectors;
-  elements.output.innerHTML = i18next.t(error);
+  elements.output.textContent = i18next.t(error);
   elements.input.style.border = '4px solid red';
 };
