@@ -33,7 +33,8 @@ export const renderFeedFyrstly = (state) => {
   const description = document.createElement('p');
   title.textContent = state.title;
   description.textContent = state.description;
-  listItem.appendChild(title, description);
+  listItem.appendChild(title);
+  listItem.appendChild(description);
   newList.append(listItem);
 };
 
@@ -41,12 +42,14 @@ export const renderModal = (item, selectors) => {
   const elements = selectors;
   elements.title.textContent = item.name;
   elements.description.textContent = item.postDescription;
-  elements.link.setAttribute('href', item.link);
+
+  const link = document.querySelector('.link-container a');
+  link.setAttribute('href', item.link);
 
   if (item.isReaded === true) {
-    elements.link.classList.add('fw-normal');
+    link.classList.add('fw-normal');
   } else {
-    elements.link.classList.add('fw-bold');
+    link.classList.add('fw-bold');
   }
 };
 
