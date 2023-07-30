@@ -11,7 +11,7 @@ import {
   renderModal,
   blockUi,
   unBlockUi,
-  showError,
+  showStatus,
 } from './view.js';
 
 export default () => {
@@ -30,7 +30,6 @@ export default () => {
   };
 
   const mystate = {
-    error: '',
     formProcess: {
       error: '',
       state: 'filling',
@@ -80,11 +79,9 @@ export default () => {
       case 'formProcess.state':
         if (value === 'sending') {
           blockUi(elements);
-        } else if (value === 'error') {
+        } else {
           unBlockUi(elements);
-          showError(watchedState.formProcess.error, elements, i18nextInstance);
-        } else if (value === 'finished') {
-          unBlockUi(elements);
+          showStatus(watchedState.formProcess, elements, i18nextInstance);
         }
         break;
       default:
@@ -111,7 +108,6 @@ export default () => {
             description,
           };
 
-          elementsGetData.output.innerHTML = i18nextInstance.t('success');
           watchedState.formProcess.state = 'finished';
           elementsGetData.formElement.value = '';
         } else {

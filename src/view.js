@@ -33,8 +33,7 @@ export const renderFeedFyrstly = (state) => {
   const description = document.createElement('p');
   title.textContent = state.title;
   description.textContent = state.description;
-  listItem.appendChild(title);
-  listItem.appendChild(description);
+  listItem.append(title, description);
   newList.append(listItem);
 };
 
@@ -67,8 +66,13 @@ export const unBlockUi = (selectors) => {
   elements.input.focus();
 };
 
-export const showError = (error, selectors, i18next) => {
+export const showStatus = (state, selectors, i18next) => {
   const elements = selectors;
-  elements.output.textContent = i18next.t(error);
-  elements.input.style.border = '4px solid red';
+
+  if (state.state === 'finished') {
+    elements.output.textContent = i18next.t('success');
+  } else {
+    elements.output.textContent = i18next.t(state.error);
+    elements.input.style.border = '4px solid red';
+  }
 };
