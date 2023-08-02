@@ -142,12 +142,21 @@ export default () => {
     const currentValue = e.target.querySelector('input').value;
     e.preventDefault();
 
-    const schema = yup.object({
-      name: yup.string().url().nullable(),
-    });
+    // const schema = yup.object({
+    //   name: yup.string().url().nullable(),
+    // });
+
+    const validate = (schemaBuilder) => {
+      const schema = schemaBuilder.object({
+        name: yup.string().url().nullable(),
+      });
+      return schema.validate({ name: watchedState.valueFromInput }, { strict: true });
+    };
 
     watchedState.valueFromInput = elements.formElement.value;
-    const validDataInput = schema.validate({ name: watchedState.valueFromInput }, { strict: true });
+    // const validDataInput = schema.validate({ name: watchedState.valueFromInput }, { strict: true });
+
+    const validDataInput = validate(yup);
 
     validDataInput.then(() => {
       if (!watchedState.arrayUrl.includes(watchedState.valueFromInput)) {
