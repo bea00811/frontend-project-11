@@ -154,7 +154,6 @@ export default () => {
     };
 
     watchedState.valueFromInput = elements.formElement.value;
-    // const validDataInput = schema.validate({ name: watchedState.valueFromInput }, { strict: true });
 
     const validDataInput = validate(yup);
 
