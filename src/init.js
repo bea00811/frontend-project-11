@@ -101,22 +101,21 @@ export default () => {
       .then((data) => {
         const previousPosts = mystate.feed.posts;
         const firstData = getPosts(data);
-
         if (!mystate.feeds.includes(urlAddress)) {
           mystate.feeds.push(urlAddress);
-
           const { title, description, posts } = firstData;
-          watchedState.feed.posts = posts;
+          mystate.feed.posts.unshift(posts);
+          watchedState.feed.posts = [...mystate.feed.posts.flat()];
           watchedState.feed.feedName = {
             title,
             description,
           };
-
           watchedState.formProcess.state = 'finished';
         } else {
           const { posts } = firstData;
           const prevAndUpdatedPosts = [...previousPosts, ...posts];
           const resultPosts = _.uniqBy(prevAndUpdatedPosts, 'name');
+          console.log(resultPosts);
           watchedState.feed.posts = resultPosts;
         }
       })
