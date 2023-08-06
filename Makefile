@@ -10,8 +10,6 @@ test:
 lint:
 	npx eslint .
 
-.PHONY: test
-
 run:
 	npx webpack serve
 

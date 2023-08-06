@@ -89,12 +89,15 @@ export default () => {
     }
   });
 
-  const getData = (urlAddress) => {
-    const decodedString = encodeURIComponent(urlAddress);
+  const parceUrl = (url) => {
     const parsedURL = new URL('https://allorigins.hexlet.app/get');
     parsedURL.searchParams.set('disableCache', 'true');
+    parsedURL.searchParams.set('url', url);
+    return parsedURL;
+  };
+  const getData = (urlAddress) => {
     axios
-      .get(`${parsedURL}&url=${decodedString}`)
+      .get(parceUrl(urlAddress))
       .then((data) => {
         const previousPosts = mystate.feed.posts;
         const firstData = getPosts(data);
