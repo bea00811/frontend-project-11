@@ -115,7 +115,6 @@ export default () => {
           const { posts } = firstData;
           const prevAndUpdatedPosts = [...previousPosts, ...posts];
           const resultPosts = _.uniqBy(prevAndUpdatedPosts, 'name');
-          console.log(resultPosts);
           watchedState.feed.posts = resultPosts;
         }
       })

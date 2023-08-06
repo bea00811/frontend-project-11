@@ -35,8 +35,8 @@ export const renderFeedFyrstly = (state) => {
   const description = document.createElement('p');
   title.textContent = state.title;
   description.textContent = state.description;
-  listItem.append(title, description);
-  newList.append(listItem);
+  listItem.prepend(title, description);
+  newList.prepend(listItem);
 };
 
 export const renderModal = (item, selectors) => {
