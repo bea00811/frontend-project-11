@@ -126,15 +126,9 @@ export default () => {
   // Hexlet All origins
   const parseData = (urlAddress, elements1) => {
     getData(urlAddress, elements1);
-
-    // const checkRss = (url, elements2) => {
     setTimeout(() => {
       getData(urlAddress, elements1);
-      // checkRss(url, elements2);
     }, 5000);
-    // };
-
-    // checkRss(urlAddress, elements1);
   };
 
   elements.form.addEventListener('submit', (e) => {

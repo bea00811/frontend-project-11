@@ -1,8 +1,8 @@
 export const renderPostsFirstly = (state, viewMessage, i18next) => {
-  console.log('done!');
   const newList = document.createElement('ul');
   for (let i = 0; i < state.posts.length; i += 1) {
     const myListEl = document.createElement('li');
+    myListEl.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'my-3');
     const myLink = document.createElement('a');
     myLink.textContent = state.posts[i].name;
     myLink.setAttribute('href', state.posts[i].link);
@@ -19,6 +19,7 @@ export const renderPostsFirstly = (state, viewMessage, i18next) => {
     button.classList.add('btn', 'btn-primary');
     button.setAttribute('data-bs-target', '#exampleModal');
     button.setAttribute('data-id', state.posts[i].id);
+    myListEl.append(myLink, button);
     myListEl.append(myLink, button);
     newList.append(myListEl);
   }
