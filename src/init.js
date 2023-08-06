@@ -89,18 +89,19 @@ export default () => {
     }
   });
 
-  const getData = (urlAddress, selectors) => {
-    const elementsGetData = selectors;
+  const getData = (urlAddress) => {
+    const decodedString = encodeURIComponent(urlAddress);
+    const parsedURL = new URL('https://allorigins.hexlet.app/get');
+    parsedURL.searchParams.set('disableCache', 'true');
     axios
-      .get(
-        `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(urlAddress)}`,
-      )
+      .get(`${parsedURL}&url=${decodedString}`)
       .then((data) => {
         const previousPosts = mystate.feed.posts;
+        const firstData = getPosts(data);
 
         if (!mystate.feeds.includes(urlAddress)) {
           mystate.feeds.push(urlAddress);
-          const firstData = getPosts(data);
+
           const { title, description, posts } = firstData;
           watchedState.feed.posts = posts;
           watchedState.feed.feedName = {
@@ -109,12 +110,10 @@ export default () => {
           };
 
           watchedState.formProcess.state = 'finished';
-          elementsGetData.formElement.value = '';
         } else {
-          const firstData = getPosts(data);
           const { posts } = firstData;
-          const PrevAndUpdatedPosts = [...previousPosts, ...posts];
-          const resultPosts = _.uniqBy(PrevAndUpdatedPosts, 'name');
+          const prevAndUpdatedPosts = [...previousPosts, ...posts];
+          const resultPosts = _.uniqBy(prevAndUpdatedPosts, 'name');
           watchedState.feed.posts = resultPosts;
         }
       })
@@ -128,34 +127,30 @@ export default () => {
   const parseData = (urlAddress, elements1) => {
     getData(urlAddress, elements1);
 
-    const checkRss = (url, elements2) => {
-      setTimeout(() => {
-        getData(url, elements2);
-        checkRss(url, elements2);
-      }, 5000);
-    };
+    // const checkRss = (url, elements2) => {
+    setTimeout(() => {
+      getData(urlAddress, elements1);
+      // checkRss(url, elements2);
+    }, 5000);
+    // };
 
-    checkRss(urlAddress, elements);
+    // checkRss(urlAddress, elements1);
   };
 
   elements.form.addEventListener('submit', (e) => {
     const currentValue = e.target.querySelector('input').value;
     e.preventDefault();
 
-    // const schema = yup.object({
-    //   name: yup.string().url().nullable(),
-    // });
+    watchedState.valueFromInput = elements.formElement.value;
 
-    const validate = (schemaBuilder) => {
-      const schema = schemaBuilder.object({
+    const validate = () => {
+      const schema = yup.object({
         name: yup.string().url().nullable(),
       });
       return schema.validate({ name: watchedState.valueFromInput }, { strict: true });
     };
 
-    watchedState.valueFromInput = elements.formElement.value;
-
-    const validDataInput = validate(yup);
+    const validDataInput = validate();
 
     validDataInput.then(() => {
       if (!watchedState.arrayUrl.includes(watchedState.valueFromInput)) {

@@ -1,4 +1,5 @@
 export const renderPostsFirstly = (state, viewMessage, i18next) => {
+  console.log('done!');
   const newList = document.createElement('ul');
   for (let i = 0; i < state.posts.length; i += 1) {
     const myListEl = document.createElement('li');
@@ -64,6 +65,7 @@ export const unBlockUi = (selectors) => {
   elements.input.removeAttribute('readonly');
   elements.input.style.border = 'none';
   elements.input.focus();
+  elements.formElement.value = '';
 };
 
 export const showStatus = (state, selectors, i18next) => {
