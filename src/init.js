@@ -127,9 +127,7 @@ export default () => {
   // Hexlet All origins
   const parseData = (urlAddress, domElements) => {
     getData(urlAddress, domElements);
-    setTimeout(() => {
-      getData(urlAddress, domElements);
-    }, 5000);
+    setTimeout(parseData, 5000, urlAddress, domElements);
   };
 
   elements.form.addEventListener('submit', (e) => {

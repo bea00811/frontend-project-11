@@ -47,18 +47,9 @@ export const renderModal = (item, selectors) => {
   const link = document.querySelector('.link-container a');
   link.setAttribute('href', item.link);
 
-  const currentLinks = document.querySelectorAll('.posts-list li a');
-  const currentLink = Array.from(currentLinks).find(
-    (item1) => item1.getAttribute('data-id') === item.id,
-  );
-
-  if (item.isReaded === true) {
-    currentLink.classList.remove('fw-bold');
-    currentLink.classList.add('fw-normal');
-  } else {
-    currentLink.classList.add('fw-normal');
-    currentLink.classList.add('fw-bold');
-  }
+  const currentLink = document.querySelector(`[data-id="${item.id}"]`);
+  currentLink.classList.remove('fw-bold');
+  currentLink.classList.add('fw-normal');
 };
 
 export const blockUi = (selectors) => {
