@@ -125,10 +125,10 @@ export default () => {
   };
 
   // Hexlet All origins
-  const parseData = (urlAddress, elements1) => {
-    getData(urlAddress, elements1);
+  const parseData = (urlAddress, domElements) => {
+    getData(urlAddress, domElements);
     setTimeout(() => {
-      getData(urlAddress, elements1);
+      getData(urlAddress, domElements);
     }, 5000);
   };
 
