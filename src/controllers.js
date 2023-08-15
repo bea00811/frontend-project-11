@@ -2,7 +2,7 @@ const parsePosts = (data) => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(data.data.contents, 'application/xml');
 
-  if (doc.querySelector('parsererror') === null) {
+  if (!doc.querySelector('parsererror')) {
     console.log(doc);
     const title = doc.querySelector('title').textContent;
     const description = doc.querySelector('description').textContent;
