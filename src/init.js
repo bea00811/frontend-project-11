@@ -102,10 +102,10 @@ export default () => {
     mystate.feed.posts.unshift(posts);
     watchedState.feed.posts = [...mystate.feed.posts.flat()];
     console.log(mystate.feed.posts);
-    mystate.feed.posts.forEach((element) => {
-      const details = { id: _.uniqueId(), isReaded: false };
-      Object.assign(element, details);
-    });
+    // mystate.feed.posts.forEach((element) => {
+    //   const details = { id: _.uniqueId(), isReaded: false };
+    //   Object.assign(element, details);
+    // });
     watchedState.feed.feedName = {
       title,
       description,
