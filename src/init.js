@@ -126,6 +126,11 @@ export default () => {
       .then((data) => {
         const previousPosts = mystate.feed.posts;
         const firstData = parsePosts(data);
+        firstData.posts.forEach((element) => {
+          const details = { id: _.uniqueId(), isReaded: false };
+          Object.assign(element, details);
+        });
+        console.log(firstData.posts);
         if (!mystate.feeds.includes(urlAddress)) {
           addFeed(mystate.feeds, urlAddress, firstData);
         } else {
