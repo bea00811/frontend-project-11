@@ -101,6 +101,11 @@ export default () => {
     const { title, description, posts } = data;
     mystate.feed.posts.unshift(posts);
     watchedState.feed.posts = [...mystate.feed.posts.flat()];
+    console.log(mystate.feed.posts);
+    mystate.feed.posts.forEach((element) => {
+      const details = { id: _.uniqueId(), isReaded: false };
+      Object.assign(element, details);
+    });
     watchedState.feed.feedName = {
       title,
       description,
@@ -121,16 +126,12 @@ export default () => {
       .then((data) => {
         const previousPosts = mystate.feed.posts;
         const firstData = parsePosts(data);
-        firstData.posts.forEach((element) => {
-          const details = { id: _.uniqueId(), isReaded: false };
-          Object.assign(element, details);
-        });
-
         if (!mystate.feeds.includes(urlAddress)) {
           addFeed(mystate.feeds, urlAddress, firstData);
         } else {
           updateFeed(firstData, previousPosts);
         }
+        setTimeout(getData, 5000, urlAddress);
       })
       .catch((error) => {
         watchedState.formProcess.error = error.message;
@@ -139,10 +140,10 @@ export default () => {
   };
 
   // Hexlet All origins
-  const parseData = (urlAddress) => {
-    getData(urlAddress);
-    setTimeout(parseData, 5000, urlAddress);
-  };
+  // const parseData = (urlAddress) => {
+  //   getData(urlAddress);
+  //   setTimeout(parseData, 5000, urlAddress);
+  // };
 
   const validate = () => {
     const schema = yup.object({
@@ -165,7 +166,7 @@ export default () => {
     watchedState.valueFromInput = elements.formElement.value;
     const validDataInput = validate();
     validDataInput.then(() => {
-      parseData(currentValue, elements);
+      getData(currentValue);
     }, (error) => {
       watchedState.formProcess.error = error.message;
       watchedState.formProcess.state = 'error';
