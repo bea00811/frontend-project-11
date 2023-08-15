@@ -99,13 +99,12 @@ export default () => {
   const addFeed = (state, url, data) => {
     state.push(url);
     const { title, description, posts } = data;
+    posts.forEach((element) => {
+      const details = { id: _.uniqueId(), isReaded: false };
+      Object.assign(element, details);
+    });
     mystate.feed.posts.unshift(posts);
     watchedState.feed.posts = [...mystate.feed.posts.flat()];
-    console.log(mystate.feed.posts);
-    // mystate.feed.posts.forEach((element) => {
-    //   const details = { id: _.uniqueId(), isReaded: false };
-    //   Object.assign(element, details);
-    // });
     watchedState.feed.feedName = {
       title,
       description,
@@ -126,11 +125,6 @@ export default () => {
       .then((data) => {
         const previousPosts = mystate.feed.posts;
         const firstData = parsePosts(data);
-        firstData.posts.forEach((element) => {
-          const details = { id: _.uniqueId(), isReaded: false };
-          Object.assign(element, details);
-        });
-        console.log(firstData.posts);
         if (!mystate.feeds.includes(urlAddress)) {
           addFeed(mystate.feeds, urlAddress, firstData);
         } else {
@@ -143,12 +137,6 @@ export default () => {
         watchedState.formProcess.state = 'error';
       });
   };
-
-  // Hexlet All origins
-  // const parseData = (urlAddress) => {
-  //   getData(urlAddress);
-  //   setTimeout(parseData, 5000, urlAddress);
-  // };
 
   const validate = () => {
     const schema = yup.object({
