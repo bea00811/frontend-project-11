@@ -4,7 +4,7 @@ import 'bootstrap';
 import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
-import getPosts from './controllers.js';
+import parsePosts from './controllers.js';
 import {
   renderFeedFyrstly,
   renderPostsFirstly,
@@ -95,27 +95,41 @@ export default () => {
     parsedURL.searchParams.set('url', url);
     return parsedURL;
   };
+
+  const addFeed = (state, url, data) => {
+    state.push(url);
+    const { title, description, posts } = data;
+    mystate.feed.posts.unshift(posts);
+    watchedState.feed.posts = [...mystate.feed.posts.flat()];
+    watchedState.feed.feedName = {
+      title,
+      description,
+    };
+    watchedState.formProcess.state = 'finished';
+  };
+
+  const updateFeed = (firstData, previousPosts) => {
+    const { posts } = firstData;
+    const prevAndUpdatedPosts = [...previousPosts, ...posts];
+    const resultPosts = _.uniqBy(prevAndUpdatedPosts, 'name');
+    watchedState.feed.posts = resultPosts;
+  };
+
   const getData = (urlAddress) => {
     axios
       .get(parceUrl(urlAddress))
       .then((data) => {
         const previousPosts = mystate.feed.posts;
-        const firstData = getPosts(data);
+        const firstData = parsePosts(data);
+        firstData.posts.forEach((element) => {
+          const details = { id: _.uniqueId(), isReaded: false };
+          Object.assign(element, details);
+        });
+
         if (!mystate.feeds.includes(urlAddress)) {
-          mystate.feeds.push(urlAddress);
-          const { title, description, posts } = firstData;
-          mystate.feed.posts.unshift(posts);
-          watchedState.feed.posts = [...mystate.feed.posts.flat()];
-          watchedState.feed.feedName = {
-            title,
-            description,
-          };
-          watchedState.formProcess.state = 'finished';
+          addFeed(mystate.feeds, urlAddress, firstData);
         } else {
-          const { posts } = firstData;
-          const prevAndUpdatedPosts = [...previousPosts, ...posts];
-          const resultPosts = _.uniqBy(prevAndUpdatedPosts, 'name');
-          watchedState.feed.posts = resultPosts;
+          updateFeed(firstData, previousPosts);
         }
       })
       .catch((error) => {
@@ -125,9 +139,23 @@ export default () => {
   };
 
   // Hexlet All origins
-  const parseData = (urlAddress, domElements) => {
-    getData(urlAddress, domElements);
-    setTimeout(parseData, 5000, urlAddress, domElements);
+  const parseData = (urlAddress) => {
+    getData(urlAddress);
+    setTimeout(parseData, 5000, urlAddress);
+  };
+
+  const validate = () => {
+    const schema = yup.object({
+      name: yup.string().url().nullable(),
+    });
+    if (!watchedState.arrayUrl.includes(watchedState.valueFromInput)) {
+      watchedState.arrayUrl.push(watchedState.valueFromInput);
+      watchedState.formProcess.state = 'sending';
+    } else {
+      watchedState.formProcess.error = 'double';
+      watchedState.formProcess.state = 'error';
+    }
+    return schema.validate({ name: watchedState.valueFromInput }, { strict: true });
   };
 
   elements.form.addEventListener('submit', (e) => {
@@ -135,25 +163,9 @@ export default () => {
     e.preventDefault();
 
     watchedState.valueFromInput = elements.formElement.value;
-
-    const validate = () => {
-      const schema = yup.object({
-        name: yup.string().url().nullable(),
-      });
-      return schema.validate({ name: watchedState.valueFromInput }, { strict: true });
-    };
-
     const validDataInput = validate();
-
     validDataInput.then(() => {
-      if (!watchedState.arrayUrl.includes(watchedState.valueFromInput)) {
-        watchedState.arrayUrl.push(watchedState.valueFromInput);
-        watchedState.formProcess.state = 'sending';
-        parseData(currentValue, elements);
-      } else {
-        watchedState.formProcess.error = 'double';
-        watchedState.formProcess.state = 'error';
-      }
+      parseData(currentValue, elements);
     }, (error) => {
       watchedState.formProcess.error = error.message;
       watchedState.formProcess.state = 'error';

@@ -1,13 +1,12 @@
-import * as _ from 'lodash';
-
-const getPosts = (data) => {
+const parsePosts = (data) => {
   const parser = new DOMParser();
-  const doc1 = parser.parseFromString(data.data.contents, 'application/xml');
+  const doc = parser.parseFromString(data.data.contents, 'application/xml');
 
-  if (doc1.querySelector('parsererror') === null) {
-    const title = doc1.querySelector('title').textContent;
-    const description = doc1.querySelector('description').textContent;
-    const items = doc1.querySelectorAll('item');
+  if (doc.querySelector('parsererror') === null) {
+    console.log(doc);
+    const title = doc.querySelector('title').textContent;
+    const description = doc.querySelector('description').textContent;
+    const items = doc.querySelectorAll('item');
 
     const posts = [];
 
@@ -18,8 +17,6 @@ const getPosts = (data) => {
       posts.push({
         name,
         postDescription,
-        isReaded: false,
-        id: _.uniqueId(),
         link,
       });
     });
@@ -27,7 +24,8 @@ const getPosts = (data) => {
     const result = { title, description, posts };
     return result;
   }
+  // throw new Error(doc.querySelector('parsererror'));
   throw new Error('badUrl');
 };
 
-export default getPosts;
+export default parsePosts;
