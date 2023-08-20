@@ -35,6 +35,9 @@ export default () => {
       state: 'filling',
       valid: '',
     },
+    uiState: {
+      isReaded: [],
+    },
     modal: '',
     feeds: [],
     valueFromInput: ' ',
@@ -43,6 +46,15 @@ export default () => {
       feedName: {},
       posts: [],
     },
+  };
+
+  const errorType = (error) => {
+    if (error.isParsingError) {
+      return 'badUrl';
+    }
+    if (error.isAxiosError) {
+      return 'Network Error';
+    }
   };
 
   const i18nextInstance = i18next.createInstance();
@@ -67,7 +79,7 @@ export default () => {
   const watchedState = onChange(mystate, (path, value) => {
     switch (path) {
       case 'feed.posts':
-        renderPostsFirstly(mystate.feed, 'viewMessage', i18nextInstance);
+        renderPostsFirstly(mystate, 'viewMessage', i18nextInstance);
         break;
       case 'feed.feedName':
         renderFeedFyrstly(mystate.feed.feedName);
@@ -75,7 +87,9 @@ export default () => {
       case 'modal':
         renderModal(mystate.modal, elements);
         break;
-
+      case 'uiState.isReaded':
+        renderPostsFirstly(mystate, 'viewMessage', i18nextInstance);
+        break;
       case 'formProcess.state':
         if (value === 'sending') {
           blockUi(elements);
@@ -98,9 +112,10 @@ export default () => {
 
   const addFeed = (state, url, data) => {
     state.push(url);
+    watchedState.arrayUrl.push(watchedState.valueFromInput);
     const { title, description, posts } = data;
     posts.forEach((element) => {
-      const details = { id: _.uniqueId(), isReaded: false };
+      const details = { id: _.uniqueId() };
       Object.assign(element, details);
     });
     mystate.feed.posts.unshift(posts);
@@ -133,23 +148,33 @@ export default () => {
         setTimeout(getData, 5000, urlAddress);
       })
       .catch((error) => {
-        watchedState.formProcess.error = error.message;
+        watchedState.formProcess.error = errorType(error);
         watchedState.formProcess.state = 'error';
       });
   };
 
   const validate = () => {
     const schema = yup.object({
-      name: yup.string().url().nullable(),
+      name: yup.string().url().notOneOf(watchedState.arrayUrl),
     });
-    if (!watchedState.arrayUrl.includes(watchedState.valueFromInput)) {
-      watchedState.arrayUrl.push(watchedState.valueFromInput);
-      watchedState.formProcess.state = 'sending';
-    } else {
-      watchedState.formProcess.error = 'double';
-      watchedState.formProcess.state = 'error';
-    }
-    return schema.validate({ name: watchedState.valueFromInput }, { strict: true });
+    // if (!watchedState.arrayUrl.includes(watchedState.valueFromInput)) {
+    //   watchedState.arrayUrl.push(watchedState.valueFromInput);
+    //   watchedState.formProcess.state = 'sending';
+    // } else {
+    //   watchedState.formProcess.error = 'double';
+    //   watchedState.formProcess.state = 'error';
+    // }
+    return schema
+      .validate({ name: watchedState.valueFromInput }, { strict: true })
+      .then(() => '')
+      .catch((error) => {
+        if (error.message === 'name must be a valid URL') {
+          // watchedState.formProcess.error = error.message;
+          return error.message;
+        }
+        return 'double';
+        // watchedState.formProcess.error = 'double';
+      });
   };
 
   elements.form.addEventListener('submit', (e) => {
@@ -157,9 +182,12 @@ export default () => {
     e.preventDefault();
 
     watchedState.valueFromInput = elements.formElement.value;
-    const validDataInput = validate();
-    validDataInput.then(() => {
-      getData(currentValue);
+
+    validate().then((errors) => {
+      if (errors === '') {
+        watchedState.formProcess.state = 'sending';
+        getData(currentValue);
+      }
     }, (error) => {
       watchedState.formProcess.error = error.message;
       watchedState.formProcess.state = 'error';
@@ -168,7 +196,8 @@ export default () => {
 
   elements.postsList.addEventListener('click', (e) => {
     const element = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));
-    element.isReaded = true;
+    watchedState.uiState.isReaded.push(element.id);
+    // element.isReaded = true;
     watchedState.modal = element;
   });
 };

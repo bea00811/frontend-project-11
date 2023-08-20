@@ -3,7 +3,6 @@ const parsePosts = (data) => {
   const doc = parser.parseFromString(data.data.contents, 'application/xml');
 
   if (!doc.querySelector('parsererror')) {
-    console.log(doc);
     const title = doc.querySelector('title').textContent;
     const description = doc.querySelector('description').textContent;
     const items = doc.querySelectorAll('item');
@@ -24,8 +23,17 @@ const parsePosts = (data) => {
     const result = { title, description, posts };
     return result;
   }
+
+  const myError = new Error(doc.querySelector('parsererror').textContent);
+
+  myError.isParsingError = true;
+  myError.data = data;
+  console.log(myError);
+
+  throw myError;
+
+  // console.log(new Error(doc.querySelector('parsererror').textContent));
   // throw new Error(doc.querySelector('parsererror'));
-  throw new Error('badUrl');
 };
 
 export default parsePosts;

@@ -1,24 +1,30 @@
 export const renderPostsFirstly = (state, viewMessage, i18next) => {
+  const newState = state.feed;
   const newList = document.createElement('ul');
-  for (let i = 0; i < state.posts.length; i += 1) {
+  for (let i = 0; i < newState.posts.length; i += 1) {
     const myListEl = document.createElement('li');
     myListEl.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'my-3');
     const myLink = document.createElement('a');
-    myLink.textContent = state.posts[i].name;
-    myLink.setAttribute('href', state.posts[i].link);
+    myLink.textContent = newState.posts[i].name;
+    myLink.setAttribute('href', newState.posts[i].link);
     myLink.setAttribute('target', '_blank');
-    if (state.posts[i].isReaded === false) {
-      myLink.classList.add('fw-bold');
-    } else {
+    // if (state.posts[i].isReaded === false) {
+    //   myLink.classList.add('fw-bold');
+    // } else {
+    //   myLink.classList.add('fw-normal');
+    // }
+    if (state.uiState.isReaded.includes(newState.posts[i].id)) {
       myLink.classList.add('fw-normal');
+    } else {
+      myLink.classList.add('fw-bold');
     }
-    myLink.setAttribute('data-id', state.posts[i].id);
+    myLink.setAttribute('data-id', newState.posts[i].id);
     const button = document.createElement('button');
     button.textContent = i18next.t(viewMessage);
     button.setAttribute('data-bs-toggle', 'modal');
     button.classList.add('btn', 'btn-primary');
     button.setAttribute('data-bs-target', '#exampleModal');
-    button.setAttribute('data-id', state.posts[i].id);
+    button.setAttribute('data-id', newState.posts[i].id);
     myListEl.append(myLink, button);
     myListEl.append(myLink, button);
     newList.append(myListEl);
