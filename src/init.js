@@ -111,14 +111,18 @@ export default () => {
     return parsedURL;
   };
 
-  const addFeed = (state, url, data) => {
-    state.push(url);
-    watchedState.arrayUrl.push(watchedState.valueFromInput);
-    const { title, description, posts } = data;
+  const addId = (posts) => {
     posts.forEach((element) => {
       const details = { id: _.uniqueId() };
       Object.assign(element, details);
     });
+  };
+
+  const addFeed = (state, url, data) => {
+    state.push(url);
+    watchedState.arrayUrl.push(watchedState.valueFromInput);
+    const { title, description, posts } = data;
+    addId(posts);
     mystate.feed.posts.unshift(posts);
     watchedState.feed.posts = [...mystate.feed.posts.flat()];
     watchedState.feed.feedName = {
@@ -130,6 +134,7 @@ export default () => {
 
   const updateFeed = (firstData, previousPosts) => {
     const { posts } = firstData;
+    addId(posts);
     const prevAndUpdatedPosts = [...previousPosts, ...posts];
     const resultPosts = _.uniqBy(prevAndUpdatedPosts, 'name');
     watchedState.feed.posts = resultPosts;
@@ -141,6 +146,7 @@ export default () => {
       .then((data) => {
         const previousPosts = mystate.feed.posts;
         const firstData = parcer(data);
+
         if (!mystate.feeds.includes(urlAddress)) {
           addFeed(mystate.feeds, urlAddress, firstData);
         } else {
@@ -183,9 +189,6 @@ export default () => {
         watchedState.formProcess.error = `${errors}`;
         watchedState.formProcess.state = 'error';
       }
-    }, (error) => {
-      watchedState.formProcess.error = error.message;
-      watchedState.formProcess.state = 'error';
     });
   });
 
