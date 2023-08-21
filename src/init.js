@@ -111,18 +111,15 @@ export default () => {
     return parsedURL;
   };
 
-  const addId = (posts) => {
-    posts.forEach((element) => {
-      const newElement = element;
-      newElement.id = _.uniqueId();
-    });
-  };
-
   const addFeed = (state, url, data) => {
     state.push(url);
     watchedState.arrayUrl.push(watchedState.valueFromInput);
     const { title, description, posts } = data;
-    addId(posts);
+    // posts.forEach((element) => {
+    //   const newElement = element;
+    //   newElement.id = _.uniqueId();
+    // });
+    posts.forEach((post) => ({ ...post, id: _.uniqueId() })); // changed here
     mystate.feed.posts.unshift(posts);
     watchedState.feed.posts = [...mystate.feed.posts.flat()];
     watchedState.feed.feedName = {
@@ -134,9 +131,9 @@ export default () => {
 
   const updateFeed = (firstData, previousPosts) => {
     const { posts } = firstData;
-    addId(posts);
     const prevAndUpdatedPosts = [...previousPosts, ...posts];
     const resultPosts = _.uniqBy(prevAndUpdatedPosts, 'name');
+    resultPosts.map((post) => ({ ...post, id: _.uniqueId() })); // changed here
     watchedState.feed.posts = resultPosts;
   };
 
@@ -146,7 +143,6 @@ export default () => {
       .then((data) => {
         const previousPosts = mystate.feed.posts;
         const firstData = parcer(data);
-
         if (!mystate.feeds.includes(urlAddress)) {
           addFeed(mystate.feeds, urlAddress, firstData);
         } else {
