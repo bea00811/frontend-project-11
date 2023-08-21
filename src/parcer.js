@@ -1,4 +1,4 @@
-const parsePosts = (data) => {
+export default (data) => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(data.data.contents, 'application/xml');
 
@@ -31,9 +31,4 @@ const parsePosts = (data) => {
   console.log(myError);
 
   throw myError;
-
-  // console.log(new Error(doc.querySelector('parsererror').textContent));
-  // throw new Error(doc.querySelector('parsererror'));
 };
-
-export default parsePosts;

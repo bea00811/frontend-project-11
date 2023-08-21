@@ -8,11 +8,6 @@ export const renderPostsFirstly = (state, viewMessage, i18next) => {
     myLink.textContent = newState.posts[i].name;
     myLink.setAttribute('href', newState.posts[i].link);
     myLink.setAttribute('target', '_blank');
-    // if (state.posts[i].isReaded === false) {
-    //   myLink.classList.add('fw-bold');
-    // } else {
-    //   myLink.classList.add('fw-normal');
-    // }
     if (state.uiState.isReaded.includes(newState.posts[i].id)) {
       myLink.classList.add('fw-normal');
     } else {

@@ -4,7 +4,7 @@ import 'bootstrap';
 import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
-import parsePosts from './controllers.js';
+import parcer from './parcer.js';
 import {
   renderFeedFyrstly,
   renderPostsFirstly,
@@ -55,6 +55,7 @@ export default () => {
     if (error.isAxiosError) {
       return 'Network Error';
     }
+    return null;
   };
 
   const i18nextInstance = i18next.createInstance();
@@ -139,7 +140,7 @@ export default () => {
       .get(parceUrl(urlAddress))
       .then((data) => {
         const previousPosts = mystate.feed.posts;
-        const firstData = parsePosts(data);
+        const firstData = parcer(data);
         if (!mystate.feeds.includes(urlAddress)) {
           addFeed(mystate.feeds, urlAddress, firstData);
         } else {
@@ -157,23 +158,14 @@ export default () => {
     const schema = yup.object({
       name: yup.string().url().notOneOf(watchedState.arrayUrl),
     });
-    // if (!watchedState.arrayUrl.includes(watchedState.valueFromInput)) {
-    //   watchedState.arrayUrl.push(watchedState.valueFromInput);
-    //   watchedState.formProcess.state = 'sending';
-    // } else {
-    //   watchedState.formProcess.error = 'double';
-    //   watchedState.formProcess.state = 'error';
-    // }
     return schema
       .validate({ name: watchedState.valueFromInput }, { strict: true })
       .then(() => '')
       .catch((error) => {
         if (error.message === 'name must be a valid URL') {
-          // watchedState.formProcess.error = error.message;
           return error.message;
         }
         return 'double';
-        // watchedState.formProcess.error = 'double';
       });
   };
 
@@ -181,12 +173,15 @@ export default () => {
     const currentValue = e.target.querySelector('input').value;
     e.preventDefault();
 
-    watchedState.valueFromInput = elements.formElement.value;
+    watchedState.valueFromInput = elements.input.value;
 
     validate().then((errors) => {
       if (errors === '') {
         watchedState.formProcess.state = 'sending';
         getData(currentValue);
+      } else {
+        watchedState.formProcess.error = `${errors}`;
+        watchedState.formProcess.state = 'error';
       }
     }, (error) => {
       watchedState.formProcess.error = error.message;
@@ -197,7 +192,6 @@ export default () => {
   elements.postsList.addEventListener('click', (e) => {
     const element = mystate.feed.posts.find((item) => item.id === e.target.getAttribute('data-id'));
     watchedState.uiState.isReaded.push(element.id);
-    // element.isReaded = true;
     watchedState.modal = element;
   });
 };
