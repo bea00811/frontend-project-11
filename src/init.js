@@ -113,8 +113,8 @@ export default () => {
 
   const addId = (posts) => {
     posts.forEach((element) => {
-      const details = { id: _.uniqueId() };
-      Object.assign(element, details);
+      const newElement = element;
+      newElement.id = _.uniqueId();
     });
   };
 
