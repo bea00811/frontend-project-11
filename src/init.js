@@ -115,12 +115,8 @@ export default () => {
     state.push(url);
     watchedState.arrayUrl.push(watchedState.valueFromInput);
     const { title, description, posts } = data;
-    // posts.forEach((element) => {
-    //   const newElement = element;
-    //   newElement.id = _.uniqueId();
-    // });
-    posts.forEach((post) => ({ ...post, id: _.uniqueId() })); // changed here
-    mystate.feed.posts.unshift(posts);
+    const postsWithId = posts.map((post) => ({ ...post, id: _.uniqueId() }));
+    mystate.feed.posts.unshift(postsWithId);
     watchedState.feed.posts = [...mystate.feed.posts.flat()];
     watchedState.feed.feedName = {
       title,
@@ -133,7 +129,7 @@ export default () => {
     const { posts } = firstData;
     const prevAndUpdatedPosts = [...previousPosts, ...posts];
     const resultPosts = _.uniqBy(prevAndUpdatedPosts, 'name');
-    resultPosts.map((post) => ({ ...post, id: _.uniqueId() })); // changed here
+    resultPosts.map((post) => ({ ...post, id: _.uniqueId() }));
     watchedState.feed.posts = resultPosts;
   };
 
