@@ -128,8 +128,10 @@ export default () => {
   const updateFeed = (firstData, previousPosts) => {
     const { posts } = firstData;
     const prevAndUpdatedPosts = [...previousPosts, ...posts];
-    const resultPosts = _.uniqBy(prevAndUpdatedPosts, 'name');
-    resultPosts.map((post) => ({ ...post, id: _.uniqueId() }));
+    const resultPosts = _.uniqBy(prevAndUpdatedPosts, 'name').map((post) => ({
+      ...post,
+      id: _.uniqueId(),
+    }));
     watchedState.feed.posts = resultPosts;
   };
 
